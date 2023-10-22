@@ -1,7 +1,7 @@
 name: classes-and-attributes
 main: me.xenotater.classes_and_attributes.Plugin
 version: 0.0.1
-api-version: 1.20.1
+api-version: 1.20
 author: Xenotater
 description: A Minecraft plugin that adds RPG classes and special character attributes.
 commands:
@@ -9,3 +9,11 @@ commands:
     description: Select or see information about classes.
     usage: /<command> [class]
     aliases: [class, cls]
+  setclass:
+    description: Set your class
+    usage: /setclass <class>
+    aliases: selectclass
+  removeclass:
+    description: Remove your class
+    usage: /removeclass
+    aliases: delclass

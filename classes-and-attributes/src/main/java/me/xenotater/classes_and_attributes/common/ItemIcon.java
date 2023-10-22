@@ -2,6 +2,8 @@ package me.xenotater.classes_and_attributes.common;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -39,6 +41,14 @@ public class ItemIcon extends ItemStack {
     setItemMeta(meta);
   }
 
+  public void addLore(String text) {
+    ItemMeta meta = getItemMeta();
+    List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
+    lore.add(text);
+    meta.setLore(lore);
+    setItemMeta(meta);
+  }
+
   private void setTexture(String texture) {
     SkullMeta meta = (SkullMeta) getItemMeta();
     PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), null);
@@ -48,16 +58,12 @@ public class ItemIcon extends ItemStack {
       textures.setSkin(new URL("http://textures.minecraft.net/texture/" + texture));
     }
     catch(MalformedURLException e){
-      Plugin.LOGGER.warning("Failed to get icon texture: " + e);
+      Plugin.plugin.LOGGER.warning("Failed to get icon texture: " + e);
       return;
     }
 
     profile.setTextures(textures);
     meta.setOwnerProfile(profile);
     setItemMeta(meta);
-  }
-
-  public String getName() {
-    return getItemMeta().getDisplayName();
   }
 }
