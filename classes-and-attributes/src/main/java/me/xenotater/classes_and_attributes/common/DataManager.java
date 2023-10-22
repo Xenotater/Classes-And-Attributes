@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -34,6 +35,7 @@ public class DataManager {
   }
 
   public boolean setClass(UUID id, String className) {
+    Plugin.plugin.LOGGER.info("Updating class for player " + Bukkit.getPlayer(id).getDisplayName() + ": " + className);
     fileConfig.set(id + ".class", className);
     return save();
   }

@@ -20,6 +20,8 @@ public class ClassesHandler implements CommandExecutor {
     if (command.getName().equals("classes")) {
       if (args.length == 1) {
         ClassName className = ClassName.getValue(args[0]);
+        if (args[0].equals("Random"))
+          className = ClassName.getRandom();
         if (className != null)
           menu.openClass((Player) sender, className);
         else
@@ -33,9 +35,12 @@ public class ClassesHandler implements CommandExecutor {
     }
     else if (command.getName().equals("setclass")) {
       if (args.length == 1) {
+        Plugin.plugin.LOGGER.info("class: " + args[0]);
         ClassName className = ClassName.getValue(args[0]);
+        if (args[0].equals("Random"))
+          className = ClassName.getRandom();
         if (className != null) {
-          menu.openConfirm((Player) sender, className.getName(), false);
+          menu.openConfirm((Player) sender, className.getName());
           return true;
         }
         else
@@ -47,8 +52,10 @@ public class ClassesHandler implements CommandExecutor {
           Player target = Bukkit.getPlayerExact(args[0]);
           if (target != null) {
             ClassName className = ClassName.getValue(args[1]);
+            if (args[1].equals("Random"))
+              className = ClassName.getRandom();
             if (className != null) {
-              menu.openConfirm((Player) sender, className.getName(), true);
+              menu.openConfirm((Player) sender, target, className.getName());
               return true;
             }
             else
@@ -66,14 +73,14 @@ public class ClassesHandler implements CommandExecutor {
     }
     else if (command.getName().equals("removeclass")) {
       if (args.length == 0) {
-        menu.openConfirm((Player) sender, "No Class", false);
+        menu.openConfirm((Player) sender, "No Class");
         return true;
       }
       else if (args.length == 1) {
         if (sender.isOp()) {
           Player target = Bukkit.getPlayerExact(args[0]);
           if (target != null) {
-            menu.openConfirm((Player) sender, "No Class", true);
+            menu.openConfirm((Player) sender, target, "No Class");
             return true;
           }
           else {

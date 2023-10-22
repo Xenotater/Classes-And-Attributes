@@ -1,6 +1,9 @@
 package me.xenotater.classes_and_attributes;
 
 import java.util.logging.Logger;
+
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
@@ -24,10 +27,7 @@ public class Plugin extends JavaPlugin
   {
     plugin = this;
     dataManager.initialize();
-    getCommand("classes").setExecutor(classesHandler);
-    getCommand("classes").setTabCompleter(classesCompleter);
-    getCommand("setclass").setExecutor(classesHandler);
-    getCommand("removeclass").setExecutor(classesHandler);
+    initClassCommands();
     getServer().getPluginManager().registerEvents(classMenu, this);
     LOGGER.info("classes-and-attributes enabled");
   }
@@ -35,5 +35,16 @@ public class Plugin extends JavaPlugin
   public void onDisable()
   {
     LOGGER.info("classes-and-attributes disabled");
+  }
+
+  private void initClassCommands() {
+    initCommand("classes", classesHandler, classesCompleter);
+    initCommand("setclass", classesHandler, classesCompleter);
+    initCommand("removeclass", classesHandler, classesCompleter);
+  }
+
+  private void initCommand(String name, CommandExecutor handler, TabCompleter completer) {
+    getCommand(name).setExecutor(handler);
+    getCommand(name).setTabCompleter(completer);
   }
 }

@@ -70,19 +70,28 @@ public class ClassMenu implements Listener {
     player.openInventory(menu);
   }
 
-  public void openConfirm(Player player, String choice, boolean isTargeted) {
+  public void openConfirm(Player player, String choice) {
     menu.clear();
     menu.addItem(new ItemIcon("" + ChatColor.RESET + ChatColor.RED + "Cancel", Material.BARRIER));
     for (int i=1;i<=7;i++)
       menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
     ItemIcon confirm = new ItemIcon("" + ChatColor.RESET + ChatColor.GREEN + "Confirm", "a79a5c95ee17abfef45c8dc224189964944d560f19a44f19f8a46aef3fee4756");
-    if (isTargeted)
-      confirm.addLore("" + ChatColor.RESET + ChatColor.RED  + player.getDisplayName() + "'s class will be changed and they will lose any benefits from their previous class.");
-    else
-      confirm.addLore("" + ChatColor.RESET + ChatColor.RED + "Your class will be changed and you will lose any benefits from your previous class.");
+    confirm.addLore("" + ChatColor.RESET + ChatColor.RED + "Your class will be changed and you will lose any benefits from your previous class.");
     confirm.addLore("" + ChatColor.RESET + ChatColor.BLUE + ChatColor.UNDERLINE + ChatColor.BOLD + choice);
     menu.addItem(confirm);
     player.openInventory(menu);
+  }
+
+  public void openConfirm(Player sender, Player target, String choice) {
+    menu.clear();
+    menu.addItem(new ItemIcon("" + ChatColor.RESET + ChatColor.RED + "Cancel", Material.BARRIER));
+    for (int i=1;i<=7;i++)
+      menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
+    ItemIcon confirm = new ItemIcon("" + ChatColor.RESET + ChatColor.GREEN + "Confirm", "a79a5c95ee17abfef45c8dc224189964944d560f19a44f19f8a46aef3fee4756");
+    confirm.addLore("" + ChatColor.RESET + ChatColor.RED  + target.getDisplayName() + "'s class will be changed and they will lose any benefits from their previous class.");
+    confirm.addLore("" + ChatColor.RESET + ChatColor.BLUE + ChatColor.UNDERLINE + ChatColor.BOLD + choice);
+    menu.addItem(confirm);
+    sender.openInventory(menu);
   }
 
   @EventHandler
@@ -103,11 +112,11 @@ public class ClassMenu implements Listener {
     final String iconName = ChatColor.stripColor(clickedIcon.getItemMeta().getDisplayName());
     final Player player = (Player) e.getWhoClicked();
     final boolean isClassIcon = !nonClassNames.contains(iconName);
+    final List<String> lore = clickedIcon.getItemMeta().getLore();
 
     if (isClassIcon) {
       if (iconName.equals("Random Class")) {
-        Integer rand = new Random().nextInt(ClassName.values().length);
-        openClass(player, ClassName.values()[rand]);
+        openClass(player, ClassName.getRandom());
         return;
       }
       else
@@ -116,19 +125,31 @@ public class ClassMenu implements Listener {
     }
 
     switch(iconName) {
-      case "Cancel":
       case "Back":
         openClassMenu(player);
         break;
       case "Select Class":
-        openConfirm(player, ChatColor.stripColor(clickedIcon.getItemMeta().getLore().get(0)), false);
+        openConfirm(player, ChatColor.stripColor(lore.get(0)));
         break;
-      case "Confirm":
-        String className = ChatColor.stripColor(clickedIcon.getItemMeta().getLore().get(1));
+      case "Cancel":
         player.closeInventory();
-        boolean success = Plugin.plugin.dataManager.setClass(player.getUniqueId(), className);
-        String successMsg = className.equals("No Class") ? "You now have no class." : "You are now the " + className + " class!";
-        player.sendMessage(success ? ChatColor.GREEN + successMsg : ChatColor.DARK_RED + "An error occurred while setting your class.");
+      case "Confirm":
+        String firstLore = ChatColor.stripColor(lore.get(0));
+        String className = ChatColor.stripColor(lore.get(1));
+        String successMsg = className.equals("No Class") ? "You now have no class." : "You now have the " + className + " class!";
+        boolean success;
+        player.closeInventory();
+        if (firstLore.startsWith("Your") && !firstLore.contains("their")) {
+          success = Plugin.plugin.dataManager.setClass(player.getUniqueId(), className);
+          player.sendMessage(success ? ChatColor.GREEN + successMsg : ChatColor.DARK_RED + "An error occurred while updating your class.");
+        }
+        else {
+          Player target = Bukkit.getPlayerExact(ChatColor.stripColor(firstLore.substring(0, firstLore.indexOf('\''))));
+          success = Plugin.plugin.dataManager.setClass(target.getUniqueId(), className);
+          player.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated" : "An error occurred while updating the target's class.");
+          if (success)
+            target.sendMessage("Your class was updated. " + successMsg);
+        }
         break;
     }
   }
