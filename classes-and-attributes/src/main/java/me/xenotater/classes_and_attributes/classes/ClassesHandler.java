@@ -12,12 +12,12 @@ import net.md_5.bungee.api.ChatColor;
 public class ClassesHandler implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-    if (!(sender instanceof Player)) {
-      sender.sendMessage(ChatColor.RED + "This command cannot be run from the console.");
-      return true;
-    }
     ClassMenu menu = new ClassMenu();
     if (command.getName().equals("classes")) {
+      if (!(sender instanceof Player)) {
+        sender.sendMessage(ChatColor.RED + "This command cannot be run from the console.");
+        return true;
+      }
       if (args.length == 1) {
         ClassName className = ClassName.getValue(args[0]);
         if (args[0].equals("Random"))
@@ -35,7 +35,10 @@ public class ClassesHandler implements CommandExecutor {
     }
     else if (command.getName().equals("setclass")) {
       if (args.length == 1) {
-        Plugin.plugin.LOGGER.info("class: " + args[0]);
+        if (!(sender instanceof Player)) {
+          sender.sendMessage(ChatColor.WHITE + "/setclass <player> <class>");
+          return true;
+        }
         ClassName className = ClassName.getValue(args[0]);
         if (args[0].equals("Random"))
           className = ClassName.getRandom();
@@ -43,9 +46,13 @@ public class ClassesHandler implements CommandExecutor {
           menu.openConfirm((Player) sender, className.getName());
           return true;
         }
-        else
-          sender.sendMessage(ChatColor.RED + "Invalid Class.");
+        else {
+          if (sender.isOp())
+            sender.sendMessage(ChatColor.WHITE + "/setclass [player] <class>");
+          else
+            sender.sendMessage(ChatColor.RED + "Invalid Class.");
           return true;
+        }
       }
       else if (args.length == 2) {
         if (sender.isOp()) {
@@ -54,6 +61,13 @@ public class ClassesHandler implements CommandExecutor {
             ClassName className = ClassName.getValue(args[1]);
             if (args[1].equals("Random"))
               className = ClassName.getRandom();
+            if (!(sender instanceof Player)) {
+              boolean success = Plugin.plugin.dataManager.setClass(target.getUniqueId(), className.getName());
+              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : "An error occurred while updating the target's class.");
+              if (success)
+                target.sendMessage("Your class was updated. You now have the " + className.getName() + " class!");
+              return true;
+            }
             if (className != null) {
               menu.openConfirm((Player) sender, target, className.getName());
               return true;
@@ -67,6 +81,10 @@ public class ClassesHandler implements CommandExecutor {
             return true;
           }
         }
+        if (sender.isOp()) {
+          sender.sendMessage(ChatColor.WHITE + "/setclass [player] <class>");
+          return true;
+        }
         return false;
       }
       return false;
@@ -79,6 +97,13 @@ public class ClassesHandler implements CommandExecutor {
       else if (args.length == 1) {
         if (sender.isOp()) {
           Player target = Bukkit.getPlayerExact(args[0]);
+          if (!(sender instanceof Player)) {
+              boolean success = Plugin.plugin.dataManager.setClass(target.getUniqueId(), "No Class");
+              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : "An error occurred while updating the target's class.");
+              if (success)
+                target.sendMessage("Your class was updated. You now have no class.");
+            return true;
+          }
           if (target != null) {
             menu.openConfirm((Player) sender, target, "No Class");
             return true;
