@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent.EquipMethod;
 
-import me.xenotater.classes_and_attributes.Plugin;
-
 /**
  * @author Arnah
  * @since Jul 30, 2015

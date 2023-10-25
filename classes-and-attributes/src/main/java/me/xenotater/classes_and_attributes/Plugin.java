@@ -13,7 +13,7 @@ import com.codingforcookies.armorequip.DispenserArmorListener;
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
 import me.xenotater.classes_and_attributes.classes.ClassesCompleter;
 import me.xenotater.classes_and_attributes.classes.ClassesHandler;
-import me.xenotater.classes_and_attributes.classes.listeners.CommonClassListener;
+import me.xenotater.classes_and_attributes.classes.CommonClassListener;
 import me.xenotater.classes_and_attributes.common.DataManager;
 
 /*
