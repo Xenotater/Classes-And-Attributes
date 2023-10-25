@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent.EquipMethod;
 
+import me.xenotater.classes_and_attributes.Plugin;
+
 /**
  * @author Arnah
  * @since Jul 30, 2015
@@ -123,7 +125,7 @@ public class ArmorListener implements Listener{
 			}
 			ArmorType newArmorType = ArmorType.matchType(e.getItem());
 			if(newArmorType != null){
-				if(newArmorType.equals(ArmorType.HELMET) && isAirOrNull(e.getPlayer().getInventory().getHelmet()) || newArmorType.equals(ArmorType.CHESTPLATE) && isAirOrNull(e.getPlayer().getInventory().getChestplate()) || newArmorType.equals(ArmorType.LEGGINGS) && isAirOrNull(e.getPlayer().getInventory().getLeggings()) || newArmorType.equals(ArmorType.BOOTS) && isAirOrNull(e.getPlayer().getInventory().getBoots())){
+				if(newArmorType.equals(ArmorType.HELMET) || newArmorType.equals(ArmorType.CHESTPLATE) || newArmorType.equals(ArmorType.LEGGINGS) || newArmorType.equals(ArmorType.BOOTS)){
 					ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent(e.getPlayer(), EquipMethod.HOTBAR, ArmorType.matchType(e.getItem()), null, e.getItem());
 					Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
 					if(armorEquipEvent.isCancelled()){

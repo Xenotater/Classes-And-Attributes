@@ -35,16 +35,27 @@ public class CommonClassListener implements Listener {
   @EventHandler
   private void onEvent(final ArmorEquipEvent e) {
     Player player = e.getPlayer();
-    ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
     ItemStack item = e.getNewArmorPiece();
+    ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
 
     if (className != null && item != null) {
-      String itemName = item.getType().name().toLowerCase();
-      List<String> disallowedList = Arrays.asList(listeners.get(className.getName()).disallowedArmor);
-      if (disallowedList.stream().anyMatch(disallowed -> itemName.contains(disallowed)) && !itemName.contains("turtle")) {
+      if (!isValidArmor(item, className)) {
         e.setCancelled(true);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't equip that item with your current class!"));
       }
     }
+  }
+  
+  public boolean isValidArmor(ItemStack item, ClassName className) {
+    String itemName = item.getType().name().toLowerCase();
+    GenericClassListener classListener = listeners.get(className.getName());
+    List<String> disallowedList = Arrays.asList(classListener.disallowedArmor);
+    boolean enchantsAllowed = classListener.armorEnchantsAllowed;
+    
+    if (disallowedList.stream().anyMatch(disallowed -> itemName.contains(disallowed)) && !itemName.contains("turtle"))
+      return false;
+    if (item.getEnchantments().size() > 0 && !enchantsAllowed)
+      return false;
+    return true;
   }
 }
