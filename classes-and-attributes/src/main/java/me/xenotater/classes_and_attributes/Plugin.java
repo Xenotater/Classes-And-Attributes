@@ -1,8 +1,12 @@
 package me.xenotater.classes_and_attributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +36,8 @@ public class Plugin extends JavaPlugin
   private ClassesCompleter classesCompleter = new ClassesCompleter();
   private ClassMenu classMenu = new ClassMenu();
   private CommonClassListener classListener = new CommonClassListener();
+
+  public Map<UUID, StopWatch> abilityCooldowns = new HashMap<>();
 
   public void onEnable()
   {

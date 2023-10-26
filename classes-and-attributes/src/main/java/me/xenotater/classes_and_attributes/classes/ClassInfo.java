@@ -226,6 +226,7 @@ public class ClassInfo {
         active = new ItemIcon(ChatColor.YELLOW +"Active Ability", Material.ELYTRA);
         active.addLore("" + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "Cloak");
         active.addLore(ChatColor.WHITE + "Gain Invisibility and Haste for 5s.");
+        active.addLore(ChatColor.WHITE + "Enemies won't target a cloaked Assassin.");
         active.addLore(ChatColor.WHITE + "10s Cooldown.");
         break;
       case BERSERKER:
@@ -272,6 +273,6 @@ public class ClassInfo {
         active.addLore(ChatColor.WHITE + "15s Cooldown.");
         break;
     }
-    active.addLore(ChatColor.GREEN + "Right Click with Fist while Crouching to Use");
+    active.addLore(ChatColor.GREEN + "Shift + Right Click with an Item to Use");
   }
 }

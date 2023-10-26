@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
@@ -44,6 +47,11 @@ public class CommonClassListener implements Listener {
   }
 
   @EventHandler
+  private void onLogout(final PlayerQuitEvent e) {
+    Plugin.plugin.abilityCooldowns.remove(e.getPlayer().getUniqueId());
+  }
+
+  @EventHandler
   private void onEquip(final ArmorEquipEvent e) {
     Player player = e.getPlayer();
     ItemStack item = e.getNewArmorPiece();
@@ -70,6 +78,9 @@ public class CommonClassListener implements Listener {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use " + item.getType().name() + " with your current class!"));
         }
       }
+
+      if (player.isSneaking())
+        listeners.get(className.getName()).triggerActive(player, e);
     }
   }
 
@@ -86,6 +97,30 @@ public class CommonClassListener implements Listener {
           player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use " + item.getType().name() + " with your current class!"));
         }
       }
+
+      //Assassin Passive Ability
+      if (!e.isCancelled() && className == ClassName.ASSASSIN) {
+        listeners.get("Assassin").triggerPassive(player, e);
+      }
+    }
+
+    //Berserker Passive Ability
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      if (className == ClassName.BERSERKER)
+        listeners.get("Berserker").triggerPassive(player, e);
+    }
+  }
+
+  //Assassin Active Ability
+  @EventHandler
+  private void onTargetEntity(final EntityTargetEvent e) {
+    if (e.getTarget() instanceof Player && e.getEntity() instanceof Creature) {
+      Player player = (Player) e.getTarget();
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      if (className == ClassName.ASSASSIN && listeners.get("Assassin").isAbilityActive(player))
+        e.setCancelled(true);
     }
   }
   
