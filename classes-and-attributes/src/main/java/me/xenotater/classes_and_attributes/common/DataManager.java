@@ -7,9 +7,12 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.ClassName;
+import me.xenotater.classes_and_attributes.classes.objects.Ranger;
 
 public class DataManager {
   private final String filename = "player-data.yml";
@@ -35,8 +38,11 @@ public class DataManager {
   }
 
   public boolean setClass(UUID id, String className) {
-    Plugin.plugin.LOGGER.info("Updating class for player " + Bukkit.getPlayer(id).getDisplayName() + ": " + className);
+    Player p = Bukkit.getPlayer(id);
+    if (getClass(id) == ClassName.RANGER) new Ranger().disablePassive(p); //remove ranger passive when switching off of it
+    Plugin.plugin.LOGGER.info("Updating class for player " + p.getDisplayName() + ": " + className);
     fileConfig.set(id + ".class", className);
+    if (getClass(id) == ClassName.RANGER) new Ranger().triggerPassive(p , null); //trigger passive if new class is ranger, or retrigger if failed to save
     return save();
   }
 

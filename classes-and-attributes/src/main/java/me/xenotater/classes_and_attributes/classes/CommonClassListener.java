@@ -5,14 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vex;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,6 +62,7 @@ public class CommonClassListener implements Listener {
     ItemStack item = e.getNewArmorPiece();
     ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
 
+    //Generic Armor Check
     if (className != null && item != null) {
       if (!isValidArmor(item, className)) {
         e.setCancelled(true);
@@ -72,6 +78,7 @@ public class CommonClassListener implements Listener {
       ItemStack item = e.getItem();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
 
+      //Generic Weapon/Shield Check
       if (className != null && item != null) {
         if (!isValidInteract(item, className)) {
             e.setCancelled(true);
@@ -79,7 +86,8 @@ public class CommonClassListener implements Listener {
         }
       }
 
-      if (player.isSneaking())
+      //All Active Abilities
+      if (player.isSneaking() && item != null && !item.getType().isBlock())
         listeners.get(className.getName()).triggerActive(player, e);
     }
   }
@@ -91,6 +99,7 @@ public class CommonClassListener implements Listener {
       ItemStack item = player.getInventory().getItemInMainHand();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
 
+      //Generic Weapon Check
       if (className != null && item != null) {
         if (!isValidWeapon(item, className)) {
           e.setCancelled(true);
@@ -98,9 +107,9 @@ public class CommonClassListener implements Listener {
         }
       }
 
-      //Assassin Passive Ability
-      if (!e.isCancelled() && className == ClassName.ASSASSIN) {
-        listeners.get("Assassin").triggerPassive(player, e);
+      //Assassin & Cleric & Shaman Passive Abilities
+      if (!e.isCancelled() && (className == ClassName.ASSASSIN || className == ClassName.CLERIC || className == ClassName.SHAMAN)) {
+        listeners.get(className.getName()).triggerPassive(player, e);
       }
     }
 
@@ -111,6 +120,12 @@ public class CommonClassListener implements Listener {
       if (className == ClassName.BERSERKER)
         listeners.get("Berserker").triggerPassive(player, e);
     }
+
+    //Shaman Active Ability
+    if (e.getEntity() instanceof Vex)
+      ((Shaman) listeners.get("Shaman")).checkSpirit((Vex) e.getEntity(), e);
+    if (e.getDamager() instanceof Vex)
+      ((Shaman) listeners.get("Shaman")).checkSpirit((Vex) e.getDamager(), e);
   }
 
   //Assassin Active Ability
@@ -121,6 +136,39 @@ public class CommonClassListener implements Listener {
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       if (className == ClassName.ASSASSIN && listeners.get("Assassin").isAbilityActive(player))
         e.setCancelled(true);
+    }
+  }
+
+  //Knight Passive Ability
+  @EventHandler
+  private void onEffect(final EntityPotionEffectEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      if (className == ClassName.KNIGHT)
+        listeners.get("Knight").triggerPassive(player, e);
+    }
+  }
+
+  //Pyromancer Passive Ability
+  @EventHandler
+  private void onDamage(final EntityDamageEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      if (className == ClassName.PYROMANCER)
+        listeners.get("Pyromancer").triggerPassive(player, e);
+    }
+  }
+
+  //Ranger Passive Ability
+  @EventHandler
+  private void onLogin(final PlayerLoginEvent e) {
+    Player player = e.getPlayer();
+    ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+    if (className == ClassName.RANGER) {
+      Runnable passiveTrigger = new Runnable() {@Override public void run() {listeners.get("Ranger").triggerPassive(player, e);}};
+      Bukkit.getScheduler().runTaskLater(Plugin.plugin, passiveTrigger, 5); 
     }
   }
   

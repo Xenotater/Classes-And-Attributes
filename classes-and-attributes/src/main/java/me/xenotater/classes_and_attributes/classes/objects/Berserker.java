@@ -12,6 +12,8 @@ public class Berserker extends GenericClass {
     disallowedWeapons = new String[]{"_sword"};
     enchantsAllowed.put(ClassItemType.ARMOR, false);
     enchantsAllowed.put(ClassItemType.BOW, false);
+    abilityDuration = 5000;
+    abilityCooldown = 10000;
   }
 
   //Rage
@@ -26,6 +28,10 @@ public class Berserker extends GenericClass {
     if (isAbilityReady(p)) {
       p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 2, false, false, true));
       startAbilityCooldown(p);
+      notifyAbilityTriggered(p, "Bloodlust");
+    }
+    else {
+      notifyAbilityCooldown(p, "Bloodlust");
     }
   }
 }

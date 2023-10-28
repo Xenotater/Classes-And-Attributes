@@ -54,7 +54,7 @@ public abstract class GenericClass extends Object{
 
   public void notifyAbilityCooldown(Player p, String name) {
     long time = getAbilityCooldown(p);
-    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "Cannot use " + name + " for " + time / 1000 + 1 + "s"));
+    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "Cannot use " + name + " for " + ((time / 1000) + 1) + "s"));
   }
 
   public void startAbilityCooldown(Player p) {
@@ -77,7 +77,6 @@ public abstract class GenericClass extends Object{
 
   public long getAbilityCooldown(Player p) {
     StopWatch cooldown = Plugin.plugin.abilityCooldowns.get(p.getUniqueId());
-    if (cooldown != null) Plugin.plugin.LOGGER.info("time left: " + (abilityCooldown - cooldown.getTime()));
     if (cooldown != null)
       return abilityCooldown - cooldown.getTime();
     return 0;
