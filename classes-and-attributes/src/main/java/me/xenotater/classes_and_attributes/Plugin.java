@@ -13,11 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.codingforcookies.armorequip.ArmorListener;
 import com.codingforcookies.armorequip.DispenserArmorListener;
+import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
 import me.xenotater.classes_and_attributes.classes.ClassesCompleter;
 import me.xenotater.classes_and_attributes.classes.ClassesHandler;
 import me.xenotater.classes_and_attributes.classes.CommonClassListener;
+import me.xenotater.classes_and_attributes.classes.objects.Mage;
 import me.xenotater.classes_and_attributes.common.DataManager;
 
 /*
@@ -45,6 +47,8 @@ public class Plugin extends JavaPlugin
     dataManager.initialize();
     initClassCommands();
     registerEvents();
+    CustomBlockData.registerListener(plugin);
+    Mage.createBrewerRecipe();
     LOGGER.info("classes-and-attributes enabled");
   }
 

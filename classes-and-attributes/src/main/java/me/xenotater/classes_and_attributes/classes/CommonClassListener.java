@@ -6,22 +6,34 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
+import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BrewingStartEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.objects.Assassin;
@@ -76,6 +88,7 @@ public class CommonClassListener implements Listener {
     if ((e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
       Player player = e.getPlayer();
       ItemStack item = e.getItem();
+      Block block = e.getClickedBlock();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
 
       //Generic Weapon/Shield Check
@@ -83,6 +96,15 @@ public class CommonClassListener implements Listener {
         if (!isValidInteract(item, className)) {
             e.setCancelled(true);
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use " + item.getType().name() + " with your current class!"));
+        }
+      }
+
+      //Restrict Mage Passive Ability
+      Boolean isMasterStand = new CustomBlockData(block, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
+      if (block != null && isMasterStand != null && isMasterStand) {
+        if (className != ClassName.MAGE) {
+          e.setCancelled(true);
+          player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use that with your current class!"));
         }
       }
 
@@ -169,6 +191,60 @@ public class CommonClassListener implements Listener {
     if (className == ClassName.RANGER) {
       Runnable passiveTrigger = new Runnable() {@Override public void run() {listeners.get("Ranger").triggerPassive(player, e);}};
       Bukkit.getScheduler().runTaskLater(Plugin.plugin, passiveTrigger, 5); 
+    }
+  }
+
+  //Restrict Mage Passive Ability
+  @EventHandler
+  private void onCraft(final CraftItemEvent e) {
+    Player player = (Player) e.getWhoClicked();
+    ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+    String itemName = ChatColor.stripColor(e.getRecipe().getResult().getItemMeta().getDisplayName());
+    if (itemName.equals("Master Brewing Stand") && !(className == ClassName.MAGE)) {
+      e.setCancelled(true);
+      player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't craft that with your current class!"));
+    }
+  }
+
+  //Mage Passive Ability
+  @EventHandler
+  private void onPlace(final BlockPlaceEvent e) {
+    String blockName = e.getItemInHand().getItemMeta().getDisplayName();
+    if (blockName.equals(ChatColor.DARK_PURPLE + "Master Brewing Stand")) {
+      Block stand = e.getBlock();
+      PersistentDataContainer customStandData = new CustomBlockData(stand, Plugin.plugin);
+      NamespacedKey key = new NamespacedKey(Plugin.plugin, "master_brewing_stand");
+      customStandData.set(key, PersistentDataType.BOOLEAN, true);
+    }
+  }
+
+  //Mage Passive Ability
+  @EventHandler
+  private void onInventory(final InventoryClickEvent e) {
+    if (e.getInventory() != null && e.getInventory().getLocation() != null) {
+      Player player = (Player) e.getWhoClicked();
+      Block source = e.getInventory().getLocation().getBlock();
+      if (source != null) {
+        Boolean isMasterStand = new CustomBlockData(source, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
+        if (isMasterStand != null && isMasterStand) {
+          listeners.get("Mage").triggerPassive(player, e);
+        }
+      }
+    }
+  }
+
+  //...Mage Passive Ability
+  @EventHandler
+  void onBrew(final BrewingStartEvent e) {
+    Plugin.plugin.LOGGER.info("brew event");
+    if (e.getBlock() != null) {
+      BrewingStand stand = (BrewingStand) e.getBlock().getState();
+      Player player = (Player) stand.getInventory().getViewers().get(0);
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      Boolean isMasterStand = new CustomBlockData(e.getBlock(), Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
+      if (className == ClassName.MAGE && isMasterStand != null && isMasterStand) {
+        listeners.get("Mage").triggerPassive(player, e);
+      }
     }
   }
   

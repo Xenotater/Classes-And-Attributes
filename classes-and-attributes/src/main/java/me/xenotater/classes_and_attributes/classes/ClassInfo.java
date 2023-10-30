@@ -195,8 +195,9 @@ public class ClassInfo {
         passive = new ItemIcon(ChatColor.YELLOW +"Passive Ability", Material.BREWING_STAND);
         passive.addLore("" + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "Master Brewer");
         passive.addLore(ChatColor.WHITE + "Can create a Brewing Stand using a Stick instead of a Blaze Rod,");
-        passive.addLore(ChatColor.WHITE + "which is fueled by Sticks and can use");
+        passive.addLore(ChatColor.WHITE + "which is fueled by Coal and can use");
         passive.addLore(ChatColor.WHITE + "any flower in place of Nether Wart.");
+        passive.addLore(ChatColor.WHITE + "All potions brew faster using this Stand.");
         passive.addLore(ChatColor.WHITE + "Only Mages may use this special Brewing Stand.");
         break;
       case PYROMANCER:
