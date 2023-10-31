@@ -24,9 +24,11 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -100,11 +102,13 @@ public class CommonClassListener implements Listener {
       }
 
       //Restrict Mage Passive Ability
-      Boolean isMasterStand = new CustomBlockData(block, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
-      if (block != null && isMasterStand != null && isMasterStand) {
-        if (className != ClassName.MAGE) {
-          e.setCancelled(true);
-          player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use that with your current class!"));
+      if (block != null) {
+        Boolean isMasterStand = new CustomBlockData(block, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
+        if (block != null && isMasterStand != null && isMasterStand) {
+          if (className != ClassName.MAGE) {
+            e.setCancelled(true);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use that with your current class!"));
+          }
         }
       }
 
@@ -221,8 +225,8 @@ public class CommonClassListener implements Listener {
   //Mage Passive Ability
   @EventHandler
   private void onInventory(final InventoryClickEvent e) {
-    if (e.getInventory() != null && e.getInventory().getLocation() != null) {
-      Player player = (Player) e.getWhoClicked();
+    Player player = (Player) e.getWhoClicked();
+    if (e.getInventory().getLocation() != null) {
       Block source = e.getInventory().getLocation().getBlock();
       if (source != null) {
         Boolean isMasterStand = new CustomBlockData(source, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
@@ -231,12 +235,13 @@ public class CommonClassListener implements Listener {
         }
       }
     }
+    if (e.getView().getTitle().equals("Spellcasting"))
+      listeners.get("Mage").triggerActive(player, e);
   }
 
   //...Mage Passive Ability
   @EventHandler
   void onBrew(final BrewingStartEvent e) {
-    Plugin.plugin.LOGGER.info("brew event");
     if (e.getBlock() != null) {
       BrewingStand stand = (BrewingStand) e.getBlock().getState();
       Player player = (Player) stand.getInventory().getViewers().get(0);
@@ -246,6 +251,14 @@ public class CommonClassListener implements Listener {
         listeners.get("Mage").triggerPassive(player, e);
       }
     }
+  }
+
+  //Mage Active Ability
+  @EventHandler
+  void onClose(final InventoryCloseEvent e) {
+    Player player = (Player) e.getViewers().get(0);
+    if (e.getView().getTitle().equals("Spellcasting"))
+      listeners.get("Mage").triggerActive(player, e);
   }
   
   public boolean isValidArmor(ItemStack item, ClassName className) {

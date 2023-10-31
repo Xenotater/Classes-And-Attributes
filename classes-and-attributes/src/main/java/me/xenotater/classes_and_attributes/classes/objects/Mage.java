@@ -7,33 +7,34 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BrewingStartEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.ClassItemType;
+import me.xenotater.classes_and_attributes.classes.mage_spellcasting.SpellMenu;
 import me.xenotater.classes_and_attributes.common.CustomBrewRecipe;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Mage extends GenericClass {
-  List<Material> flowers = new ArrayList<>(); 
+  List<Material> flowers = new ArrayList<>();
+  SpellMenu spells = new SpellMenu();
   
   public Mage() {
     disallowedArmor = new String[]{"chainmail", "iron", "diamond", "netherite"};
@@ -43,6 +44,8 @@ public class Mage extends GenericClass {
     enchantsAllowed.put(ClassItemType.BOW, false);
     setFlowers();
     createRecipies();
+    abilityDuration = 0;
+    abilityCooldown = 15000;
   }
 
   //Master Brewer
@@ -107,7 +110,27 @@ public class Mage extends GenericClass {
 
   //Spellcasting
   public void triggerActive(Player p, Event e) {
-    
+    if (e instanceof PlayerInteractEvent) {
+      if (isAbilityReady(p))
+        spells.openMenu(p);
+      else
+        notifyAbilityCooldown(p, "Spellcasting");
+    }
+    else if (e instanceof InventoryClickEvent) {
+      InventoryClickEvent event = (InventoryClickEvent) e;
+      if (event.getCurrentItem() != null) {
+        String spell = event.getCurrentItem().getItemMeta().getDisplayName();
+        event.setCancelled(true);
+        if (!spell.isEmpty()) {
+          p.closeInventory();
+          notifySpellCast(p, spell);
+        }
+      }
+    }
+    else if (e instanceof InventoryCloseEvent) {
+      notifyAbilityTriggered(p, "Spellcasting");
+      startAbilityCooldown(p);
+    }
   }
 
   public static void createBrewerRecipe() {
@@ -213,5 +236,9 @@ public class Mage extends GenericClass {
     CustomBrewRecipe awkwardRecipe = CustomBrewRecipe.getRecipe(stand);
     if (awkwardRecipe != null)
       awkwardRecipe.startBrewing(stand);
+  }
+
+  private void notifySpellCast(Player p, String name) {
+    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "** Cast " + name + " **"));
   }
 }

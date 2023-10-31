@@ -19,7 +19,6 @@ import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.common.ItemIcon;
 
 public class ClassMenu implements Listener {
-  Inventory menu = Bukkit.createInventory(null, 9, "Classes");
   List<String> nonClassNames = new ArrayList<>();
 
   public ClassMenu() {
@@ -30,8 +29,8 @@ public class ClassMenu implements Listener {
   }
 
   public void openClassMenu(Player player) {
+    Inventory menu = Bukkit.createInventory(null, 9, "Classes");
     ClassName currentClass = Plugin.plugin.dataManager.getClass(player.getUniqueId());
-    menu.clear();
     menu.addItem(new ItemIcon(ChatColor.WHITE + "Random Class", "9d9cc58ad25a1ab16d36bb5d6d493c8f5898c2bf302b64e325921c41c35867"));
     menu.addItem(new ItemIcon(getClassColor("Assassin", currentClass) + "Assassin", "cf76c50d0672ca53fbb68c6ac7d1ef4796dd359173f07c8dd40056c5e2e2f132"));
     menu.addItem(new ItemIcon(getClassColor("Berserker", currentClass) + "Berserker", "c09741fca109c4cb0b5efaa0634616503051a199e1d44e4e1149ede0bdc49c8a"));
@@ -53,7 +52,7 @@ public class ClassMenu implements Listener {
 
   public void openClass(Player player, ClassName className) {
     ClassInfo info = new ClassInfo(className);
-    menu.clear();
+    Inventory menu = Bukkit.createInventory(null, 9, className.getName() + " Class Info");
     menu.addItem(new ItemIcon(ChatColor.RED + "Back", "f84f597131bbe25dc058af888cb29831f79599bc67c95c802925ce4afba332fc"));
     menu.setItem(1, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
     menu.addItem(info.info);
@@ -69,7 +68,7 @@ public class ClassMenu implements Listener {
   }
 
   public void openConfirm(Player player, String choice) {
-    menu.clear();
+    Inventory menu = Bukkit.createInventory(null, 9, "Confirm Class Change");
     menu.addItem(new ItemIcon(ChatColor.RED + "Cancel", Material.BARRIER));
     for (int i=1;i<=7;i++)
       menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
@@ -82,7 +81,7 @@ public class ClassMenu implements Listener {
   }
 
   public void openConfirm(Player sender, Player target, String choice) {
-    menu.clear();
+    Inventory menu = Bukkit.createInventory(null, 9, "Confirm Class Change");
     menu.addItem(new ItemIcon(ChatColor.RED + "Cancel", Material.BARRIER));
     for (int i=1;i<=7;i++)
       menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
@@ -96,7 +95,8 @@ public class ClassMenu implements Listener {
 
   @EventHandler
   public void onInventoryClick(final InventoryClickEvent e) {
-    if (!e.getView().getTitle().equals("Classes"))
+    String invName = e.getView().getTitle();
+    if (!(invName.equals("Classes") || invName.contains("Class Info") || invName.equals("Confirm Class Change")))
       return;
 
     e.setCancelled(true);
@@ -153,12 +153,5 @@ public class ClassMenu implements Listener {
         }
         break;
     }
-  }
-
-  @EventHandler
-  public void onInventoryClick(final InventoryDragEvent e) {
-      if (e.getView().getTitle().equals("Classes")) {
-        e.setCancelled(true);
-      }
   }
 }

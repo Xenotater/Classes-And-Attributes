@@ -35,6 +35,21 @@ public class ItemIcon extends ItemStack {
     setAmount(1);
   }
 
+  public ItemIcon(String name, String lore, Material type) {
+    setType(type);
+    setName(name);
+    addLore(lore);
+    setAmount(1);
+  }
+
+  public ItemIcon(String name, String lore, String texture) {
+    setType(Material.PLAYER_HEAD);
+    setName(name);
+    addLore(lore);
+    setTexture(texture);
+    setAmount(1);
+  }
+
   private void setName(String name) {
     ItemMeta meta = getItemMeta();
     meta.setDisplayName(name);

@@ -253,7 +253,7 @@ public class ClassInfo {
         active.addLore("" + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "Spellcasting");
         active.addLore(ChatColor.WHITE + "Choose between 3 effects, which may deal");
         active.addLore(ChatColor.WHITE + "damage, debuff enemies, or buff allies.");
-        active.addLore(ChatColor.WHITE + "5s Cooldown.");
+        active.addLore(ChatColor.WHITE + "15s Cooldown.");
         break;
       case PYROMANCER:
         active = new ItemIcon(ChatColor.YELLOW +"Active Ability", Material.FIRE_CHARGE);
