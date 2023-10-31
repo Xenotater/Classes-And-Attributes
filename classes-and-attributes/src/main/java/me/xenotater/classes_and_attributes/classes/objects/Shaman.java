@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.ClassItemType;
+import net.md_5.bungee.api.ChatColor;
 
 public class Shaman extends GenericClass {
   public Shaman() {
@@ -53,11 +54,10 @@ public class Shaman extends GenericClass {
       notifyAbilityCooldown(p, "Guardian Spirits");
     }
   }
-
-  //Spirits may persist if the server stops or the chunk unloads before the ability ends...
   private void summonSpirit(Player p) {
     Vex spirit = p.getWorld().spawn(p.getLocation(), Vex.class);
-    spirit.setCustomName("Guardian Spirit");
+    spirit.setCustomName(ChatColor.DARK_GREEN + "Guardian Spirit");
+    spirit.setCustomNameVisible(true);
     spirit.setLifeTicks(400);
     spirit.setBound(p.getLocation());
 
@@ -77,7 +77,7 @@ public class Shaman extends GenericClass {
     double dist = -1;
 
     for (Entity e : nearbyMobs) {
-      if (e instanceof Monster && (e.getCustomName() == null || !e.getCustomName().equals("Guardian Spirit"))) {
+      if (e instanceof Monster && (e.getCustomName() == null || !e.getCustomName().equals(ChatColor.DARK_GREEN + "Guardian Spirit"))) {
         double newDist = playerLoc.distance(e.getLocation());
         if (dist == -1 || newDist < dist) {
           nearest = (Monster) e;
@@ -89,7 +89,7 @@ public class Shaman extends GenericClass {
   }
 
   public void checkSpirit(Vex vex, EntityDamageByEntityEvent e) {
-    if (vex.getCustomName() != null && vex.getCustomName().equals("Guardian Spirit")) {
+    if (vex.getCustomName() != null && vex.getCustomName().equals(ChatColor.DARK_GREEN + "Guardian Spirit")) {
       if (vex.getTarget() instanceof Player)
         vex.remove(); //ability must no longer be active... despawn
       else {

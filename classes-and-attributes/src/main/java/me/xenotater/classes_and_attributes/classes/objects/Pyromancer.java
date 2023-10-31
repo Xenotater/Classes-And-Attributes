@@ -3,7 +3,7 @@ package me.xenotater.classes_and_attributes.classes.objects;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -38,8 +38,10 @@ public class Pyromancer extends GenericClass {
   //Fireball
   public void triggerActive(Player p, Event e) {
     if (isAbilityReady(p)) {
-      Fireball fireball = p.launchProjectile(Fireball.class);
+      LargeFireball fireball = p.launchProjectile(LargeFireball.class);
       fireball.setDirection(p.getLocation().getDirection());
+      fireball.setShooter(p);
+      fireball.setYield(5);
       startAbilityCooldown(p);
       notifyAbilityTriggered(p, "Fireball");
     }

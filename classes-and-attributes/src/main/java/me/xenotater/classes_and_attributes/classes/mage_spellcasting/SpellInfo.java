@@ -39,15 +39,15 @@ public enum SpellInfo {
       case BANISH:
         return "A nearby monster dies";
       case CHARM:
-        return "A nearby monster turns on its allies";
+        return "A nearby monster turns on its allies for 15s";
       case CONFUSION:
         return "Nearby enemies lose their target for 5s";
       case SUSPEND:
         return "Nearby enemies gain Levitation for 5s";
       case ENFLAME:
-        return "Nearby enemies are set on fire";
+        return "Nearby enemies are set on fire for 10s";
       case VOLLEY:
-        return "Fire 20 arrows in rapid succession";
+        return "Fire 20 piercing arrows in rapid succession";
       case FLAMETHROW:
         return "Fire 10 Blaze fireballs";
       case ELECTRIFY:

@@ -26,15 +26,15 @@ import org.bukkit.potion.PotionType;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.ClassItemType;
+import me.xenotater.classes_and_attributes.classes.mage_spellcasting.SpellHandler;
 import me.xenotater.classes_and_attributes.classes.mage_spellcasting.SpellMenu;
 import me.xenotater.classes_and_attributes.common.CustomBrewRecipe;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class Mage extends GenericClass {
   List<Material> flowers = new ArrayList<>();
   SpellMenu spells = new SpellMenu();
+  SpellHandler spellHandler = new SpellHandler();
   
   public Mage() {
     disallowedArmor = new String[]{"chainmail", "iron", "diamond", "netherite"};
@@ -45,7 +45,7 @@ public class Mage extends GenericClass {
     setFlowers();
     createRecipies();
     abilityDuration = 0;
-    abilityCooldown = 15000;
+    //abilityCooldown = 15000;
   }
 
   //Master Brewer
@@ -123,7 +123,7 @@ public class Mage extends GenericClass {
         event.setCancelled(true);
         if (!spell.isEmpty()) {
           p.closeInventory();
-          notifySpellCast(p, spell);
+          spellHandler.castSpell(p, ChatColor.stripColor(spell));
         }
       }
     }
@@ -236,9 +236,5 @@ public class Mage extends GenericClass {
     CustomBrewRecipe awkwardRecipe = CustomBrewRecipe.getRecipe(stand);
     if (awkwardRecipe != null)
       awkwardRecipe.startBrewing(stand);
-  }
-
-  private void notifySpellCast(Player p, String name) {
-    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "** Cast " + name + " **"));
   }
 }

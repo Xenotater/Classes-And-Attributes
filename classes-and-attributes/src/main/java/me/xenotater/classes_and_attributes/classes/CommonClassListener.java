@@ -6,28 +6,38 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BrewingStartEvent;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -241,7 +251,7 @@ public class CommonClassListener implements Listener {
 
   //...Mage Passive Ability
   @EventHandler
-  void onBrew(final BrewingStartEvent e) {
+  private void onBrew(final BrewingStartEvent e) {
     if (e.getBlock() != null) {
       BrewingStand stand = (BrewingStand) e.getBlock().getState();
       Player player = (Player) stand.getInventory().getViewers().get(0);
@@ -255,10 +265,21 @@ public class CommonClassListener implements Listener {
 
   //Mage Active Ability
   @EventHandler
-  void onClose(final InventoryCloseEvent e) {
+  private void onClose(final InventoryCloseEvent e) {
     Player player = (Player) e.getViewers().get(0);
     if (e.getView().getTitle().equals("Spellcasting"))
       listeners.get("Mage").triggerActive(player, e);
+  }
+
+  //Clear unloaded summons
+  @EventHandler
+  private void onUnload(final ChunkLoadEvent e) {
+    Entity[] entities = e.getChunk().getEntities();
+    for (Entity entity : entities) {
+      String name = entity.getCustomName();
+      if (name != null && (name.equals(ChatColor.DARK_GREEN + "Guardian Spirit") || name.equals(ChatColor.LIGHT_PURPLE + "Magic Companion")))
+        entity.remove();
+    }
   }
   
   public boolean isValidArmor(ItemStack item, ClassName className) {
@@ -273,6 +294,13 @@ public class CommonClassListener implements Listener {
       return false;
     return true;
   }
+
+  //Mage Active Ability
+  @EventHandler
+  private void onBreed(final PlayerInteractEntityEvent e) {
+    if (e.getRightClicked().getCustomName() != null && e.getRightClicked().getCustomName().equals(ChatColor.LIGHT_PURPLE + "Magic Companion"))
+      e.setCancelled(true);
+  } 
 
   public boolean isValidInteract(ItemStack item, ClassName className) {
     String itemName = item.getType().name().toLowerCase();
