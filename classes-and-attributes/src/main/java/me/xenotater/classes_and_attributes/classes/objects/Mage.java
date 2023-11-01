@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 
@@ -45,7 +44,7 @@ public class Mage extends GenericClass {
     setFlowers();
     createRecipies();
     abilityDuration = 0;
-    //abilityCooldown = 15000;
+    abilityCooldown = 15000;
   }
 
   //Master Brewer
@@ -173,17 +172,17 @@ public class Mage extends GenericClass {
   private void createRecipies() {
     ItemStack water = new ItemStack(Material.POTION);
     PotionMeta waterMeta = (PotionMeta) water.getItemMeta();
-    waterMeta.setBasePotionData(new PotionData(PotionType.WATER));
+    waterMeta.setBasePotionType(PotionType.WATER);
     water.setItemMeta(waterMeta);
 
     for (Material flower : flowers) {
       new CustomBrewRecipe(new ItemStack(flower), water, (inventory, item, ingridient) -> {
-        if (!(item.getType() == Material.POTION) && ((PotionMeta) item.getItemMeta()).getBasePotionData().getType() == PotionType.WATER)
+        if (!(item.getType() == Material.POTION) && ((PotionMeta) item.getItemMeta()).getBasePotionType() == PotionType.WATER)
           return;
         if (!flowers.contains(ingridient.getType()))
           return;
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        meta.setBasePotionData(new PotionData(PotionType.AWKWARD));
+        meta.setBasePotionType(PotionType.AWKWARD);
         item.setItemMeta(meta);
         BrewingStand stand = inventory.getHolder();
         stand.setFuelLevel(stand.getFuelLevel() - 1);

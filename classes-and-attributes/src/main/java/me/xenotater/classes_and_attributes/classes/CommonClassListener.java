@@ -6,29 +6,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BrewingStartEvent;
-import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityTeleportEvent;
-import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -37,12 +30,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.jeff_media.customblockdata.CustomBlockData;
@@ -169,8 +161,11 @@ public class CommonClassListener implements Listener {
   private void onTargetEntity(final EntityTargetEvent e) {
     if (e.getTarget() instanceof Player && e.getEntity() instanceof Creature) {
       Player player = (Player) e.getTarget();
+      PotionEffect entityConfusion = ((Creature) e.getEntity()).getPotionEffect(PotionEffectType.CONFUSION);
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       if (className == ClassName.ASSASSIN && listeners.get("Assassin").isAbilityActive(player))
+        e.setCancelled(true);
+      if (entityConfusion != null && entityConfusion.getAmplifier() == 1) //Mage Confusion Spell
         e.setCancelled(true);
     }
   }

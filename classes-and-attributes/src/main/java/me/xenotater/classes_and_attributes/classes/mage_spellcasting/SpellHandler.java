@@ -31,7 +31,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class SpellHandler {
   public void castSpell(Player p, String name) {
-    Plugin.plugin.LOGGER.info("casting: " + name);
     List<Entity> multiTargets;
     Entity singleTarget;
     switch (name) {
@@ -42,7 +41,7 @@ public class SpellHandler {
           affectEntities(multiTargets, new PotionEffect(PotionEffectType.ABSORPTION, 100, 4));
         }
         affectEntity(p, new PotionEffect(PotionEffectType.HEAL, 1, 99));
-        affectEntity(p, new PotionEffect(PotionEffectType.ABSORPTION, 100, 3));
+        affectEntity(p, new PotionEffect(PotionEffectType.ABSORPTION, 100, 4));
         break;
       case "Empower":
         multiTargets = getAllNearby(p, Player.class, 20);
@@ -69,25 +68,22 @@ public class SpellHandler {
         if (singleTarget != null) {
           Runnable targeter = new Runnable() {
             public void run() {
-              ((Monster) singleTarget).setTarget((Monster) getRandomNearby(p, Monster.class, 20));
+              Monster monster = (Monster) singleTarget;
+              if (!(monster.getTarget() instanceof Monster))
+                monster.setTarget((Monster) getRandomNearby(p, Monster.class, 20));
             }
           };
-          scheduleRepeating(targeter, 20, 300);
+          scheduleRepeating(targeter, 0, 300);
         }
         break;
       case "Confusion":
-        multiTargets = getAllNearby(p, Monster.class, 20);
-        if (!multiTargets.isEmpty()) {
-          Runnable unTargeter = new Runnable() {
-            public void run() {
-              for (Entity target : multiTargets) {
-                ((Monster) target).setTarget(null);
-                ((Monster) target).setLastDamageCause(null);
-              }
+          multiTargets = getAllNearby(p, Monster.class, 20);
+          if (!multiTargets.isEmpty()) {
+            for (Entity target : multiTargets) {
+              affectEntity((Monster) target, new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
+              ((Monster) target).setTarget(null);
             }
-          };
-          scheduleRepeating(unTargeter, 1, 100);
-        }
+          }
         break;
       case "Suspend":
         multiTargets = getAllNearby(p, Monster.class, 20);
@@ -138,7 +134,7 @@ public class SpellHandler {
                 boolean onSurface = playerLoc.getY() == p.getWorld().getHighestBlockYAt(playerLoc.getBlockX(), playerLoc.getBlockZ());
                 double y = onSurface ? p.getWorld().getHighestBlockYAt((int) randX, (int) randZ) : playerLoc.getY(); 
                 Location summonLoc = new Location(p.getWorld(), randX, y, randZ);
-                Collection<Entity> targets = p.getWorld().getNearbyEntities(summonLoc, 2, 0, 2);
+                Collection<Entity> targets = p.getWorld().getNearbyEntities(summonLoc, 4, 4, 4);
                 for (Entity target : targets) {
                   if (target instanceof Player)
                     found = false;
@@ -167,6 +163,13 @@ public class SpellHandler {
           wolf.setCustomName(ChatColor.LIGHT_PURPLE + "Magic Companion");
           wolf.setCustomNameVisible(true);
           wolf.setRemoveWhenFarAway(true);
+          Runnable reTarget = new Runnable() {
+            public void run() {
+              if (wolf.getTarget() == null)
+                wolf.setTarget((Monster) getRandomNearby(p, Monster.class, 20));
+            }
+          };
+          scheduleRepeating(reTarget, 20, 300);
           scheduleDespawn(wolf, 300);
         }
         break;
