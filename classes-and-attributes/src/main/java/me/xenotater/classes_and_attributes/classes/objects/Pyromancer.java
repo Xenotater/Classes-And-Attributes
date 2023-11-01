@@ -41,7 +41,7 @@ public class Pyromancer extends GenericClass {
       LargeFireball fireball = p.launchProjectile(LargeFireball.class);
       fireball.setDirection(p.getLocation().getDirection());
       fireball.setShooter(p);
-      fireball.setYield(5);
+      fireball.setYield(3);
       startAbilityCooldown(p);
       notifyAbilityTriggered(p, "Fireball");
     }

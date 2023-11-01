@@ -1,8 +1,6 @@
 package me.xenotater.classes_and_attributes.classes;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -40,31 +38,17 @@ import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
-import me.xenotater.classes_and_attributes.classes.objects.Assassin;
-import me.xenotater.classes_and_attributes.classes.objects.Berserker;
-import me.xenotater.classes_and_attributes.classes.objects.Cleric;
 import me.xenotater.classes_and_attributes.classes.objects.GenericClass;
-import me.xenotater.classes_and_attributes.classes.objects.Knight;
-import me.xenotater.classes_and_attributes.classes.objects.Mage;
-import me.xenotater.classes_and_attributes.classes.objects.Pyromancer;
-import me.xenotater.classes_and_attributes.classes.objects.Ranger;
 import me.xenotater.classes_and_attributes.classes.objects.Shaman;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CommonClassListener implements Listener {
-  Map<String, GenericClass> listeners = new HashMap<>();
+  Map<ClassName, GenericClass> classes = new HashMap<>();
 
-  public CommonClassListener() {
-    listeners.put("Assassin", new Assassin());
-    listeners.put("Berserker", new Berserker());
-    listeners.put("Cleric", new Cleric());
-    listeners.put("Knight", new Knight());
-    listeners.put("Mage", new Mage());
-    listeners.put("Pyromancer", new Pyromancer());
-    listeners.put("Shaman", new Shaman());
-    listeners.put("Ranger", new Ranger());
+  public void setClasses(Map<ClassName, GenericClass> classMap) {
+    classes = classMap;
   }
 
   @EventHandler
@@ -80,7 +64,7 @@ public class CommonClassListener implements Listener {
 
     //Generic Armor Check
     if (className != null && item != null) {
-      if (!isValidArmor(item, className)) {
+      if (!classes.get(className).isValidArmor(item, className)) {
         e.setCancelled(true);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't equip " + item.getType().name() + " with your current class!"));
       }
@@ -97,7 +81,7 @@ public class CommonClassListener implements Listener {
 
       //Generic Weapon/Shield Check
       if (className != null && item != null) {
-        if (!isValidInteract(item, className)) {
+        if (!classes.get(className).isValidInteract(item, className)) {
             e.setCancelled(true);
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use " + item.getType().name() + " with your current class!"));
         }
@@ -116,7 +100,7 @@ public class CommonClassListener implements Listener {
 
       //All Active Abilities
       if (player.isSneaking() && item != null && !item.getType().isBlock())
-        listeners.get(className.getName()).triggerActive(player, e);
+        classes.get(className).triggerActive(player, e);
     }
   }
 
@@ -129,7 +113,7 @@ public class CommonClassListener implements Listener {
 
       //Generic Weapon Check
       if (className != null && item != null) {
-        if (!isValidWeapon(item, className)) {
+        if (!classes.get(className).isValidWeapon(item, className)) {
           e.setCancelled(true);
           player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "You can't use " + item.getType().name() + " with your current class!"));
         }
@@ -137,7 +121,7 @@ public class CommonClassListener implements Listener {
 
       //Assassin & Cleric & Shaman Passive Abilities
       if (!e.isCancelled() && (className == ClassName.ASSASSIN || className == ClassName.CLERIC || className == ClassName.SHAMAN)) {
-        listeners.get(className.getName()).triggerPassive(player, e);
+        classes.get(className).triggerPassive(player, e);
       }
     }
 
@@ -146,14 +130,14 @@ public class CommonClassListener implements Listener {
       Player player = (Player) e.getEntity();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       if (className == ClassName.BERSERKER)
-        listeners.get("Berserker").triggerPassive(player, e);
+        classes.get(ClassName.BERSERKER).triggerPassive(player, e);
     }
 
     //Shaman Active Ability
     if (e.getEntity() instanceof Vex)
-      ((Shaman) listeners.get("Shaman")).checkSpirit((Vex) e.getEntity(), e);
+      ((Shaman) classes.get(ClassName.SHAMAN)).checkSpirit((Vex) e.getEntity(), e);
     if (e.getDamager() instanceof Vex)
-      ((Shaman) listeners.get("Shaman")).checkSpirit((Vex) e.getDamager(), e);
+      ((Shaman) classes.get(ClassName.SHAMAN)).checkSpirit((Vex) e.getDamager(), e);
   }
 
   //Assassin Active Ability
@@ -163,7 +147,7 @@ public class CommonClassListener implements Listener {
       Player player = (Player) e.getTarget();
       PotionEffect entityConfusion = ((Creature) e.getEntity()).getPotionEffect(PotionEffectType.CONFUSION);
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
-      if (className == ClassName.ASSASSIN && listeners.get("Assassin").isAbilityActive(player))
+      if (className == ClassName.ASSASSIN && classes.get(ClassName.ASSASSIN).isAbilityActive(player))
         e.setCancelled(true);
       if (entityConfusion != null && entityConfusion.getAmplifier() == 1) //Mage Confusion Spell
         e.setCancelled(true);
@@ -177,7 +161,7 @@ public class CommonClassListener implements Listener {
       Player player = (Player) e.getEntity();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       if (className == ClassName.KNIGHT)
-        listeners.get("Knight").triggerPassive(player, e);
+        classes.get(ClassName.KNIGHT).triggerPassive(player, e);
     }
   }
 
@@ -188,7 +172,7 @@ public class CommonClassListener implements Listener {
       Player player = (Player) e.getEntity();
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       if (className == ClassName.PYROMANCER)
-        listeners.get("Pyromancer").triggerPassive(player, e);
+        classes.get(ClassName.PYROMANCER).triggerPassive(player, e);
     }
   }
 
@@ -198,7 +182,7 @@ public class CommonClassListener implements Listener {
     Player player = e.getPlayer();
     ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
     if (className == ClassName.RANGER) {
-      Runnable passiveTrigger = new Runnable() {@Override public void run() {listeners.get("Ranger").triggerPassive(player, e);}};
+      Runnable passiveTrigger = new Runnable() {@Override public void run() {classes.get(ClassName.RANGER).triggerPassive(player, e);}};
       Bukkit.getScheduler().runTaskLater(Plugin.plugin, passiveTrigger, 5); 
     }
   }
@@ -236,12 +220,12 @@ public class CommonClassListener implements Listener {
       if (source != null) {
         Boolean isMasterStand = new CustomBlockData(source, Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
         if (isMasterStand != null && isMasterStand) {
-          listeners.get("Mage").triggerPassive(player, e);
+          classes.get(ClassName.MAGE).triggerPassive(player, e);
         }
       }
     }
     if (e.getView().getTitle().equals("Spellcasting"))
-      listeners.get("Mage").triggerActive(player, e);
+      classes.get(ClassName.MAGE).triggerActive(player, e);
   }
 
   //...Mage Passive Ability
@@ -253,7 +237,7 @@ public class CommonClassListener implements Listener {
       ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
       Boolean isMasterStand = new CustomBlockData(e.getBlock(), Plugin.plugin).get(new NamespacedKey(Plugin.plugin, "master_brewing_stand"), PersistentDataType.BOOLEAN);
       if (className == ClassName.MAGE && isMasterStand != null && isMasterStand) {
-        listeners.get("Mage").triggerPassive(player, e);
+        classes.get(ClassName.MAGE).triggerPassive(player, e);
       }
     }
   }
@@ -263,7 +247,7 @@ public class CommonClassListener implements Listener {
   private void onClose(final InventoryCloseEvent e) {
     Player player = (Player) e.getViewers().get(0);
     if (e.getView().getTitle().equals("Spellcasting"))
-      listeners.get("Mage").triggerActive(player, e);
+      classes.get(ClassName.MAGE).triggerActive(player, e);
   }
 
   //Clear unloaded summons
@@ -276,19 +260,6 @@ public class CommonClassListener implements Listener {
         entity.remove();
     }
   }
-  
-  public boolean isValidArmor(ItemStack item, ClassName className) {
-    String itemName = item.getType().name().toLowerCase();
-    GenericClass classListener = listeners.get(className.getName());
-    List<String> disallowedList = Arrays.asList(classListener.getDisallowedArmor());
-    boolean enchantsAllowed = classListener.getEnchantsAllowed(ClassItemType.ARMOR);
-    
-    if (disallowedList.stream().anyMatch(disallowed -> itemName.contains(disallowed)) && !itemName.contains("turtle"))
-      return false;
-    if (item.getEnchantments().size() > 0 && !enchantsAllowed)
-      return false;
-    return true;
-  }
 
   //Mage Active Ability
   @EventHandler
@@ -296,36 +267,4 @@ public class CommonClassListener implements Listener {
     if (e.getRightClicked().getCustomName() != null && e.getRightClicked().getCustomName().equals(ChatColor.LIGHT_PURPLE + "Magic Companion"))
       e.setCancelled(true);
   } 
-
-  public boolean isValidInteract(ItemStack item, ClassName className) {
-    String itemName = item.getType().name().toLowerCase();
-    GenericClass classListener = listeners.get(className.getName());
-    List<String> disallowedList = Arrays.asList(classListener.getDisallowedInteracts());
-    boolean tridentEnchantsAllowed = classListener.getEnchantsAllowed(ClassItemType.TRIDENT);
-    boolean bowEnchantsAllowed = classListener.getEnchantsAllowed(ClassItemType.BOW);
-
-    if (disallowedList.stream().anyMatch(disallowed -> itemName.contains(disallowed)))
-      return false;
-    if (itemName.equals("trident") && item.getEnchantments().size() > 0 && !tridentEnchantsAllowed)
-      return false;
-    if ((itemName.equals("bow") || itemName.equals("crossbow")) && item.getEnchantments().size() > 0 && !bowEnchantsAllowed)
-      return false;
-    return true;
-  }
-
-  public boolean isValidWeapon(ItemStack item, ClassName className) {
-    String itemName = item.getType().name().toLowerCase();
-    GenericClass classListener = listeners.get(className.getName());
-    List<String> disallowedList = Arrays.asList(classListener.getDisallowedWeapons());
-    boolean weaponEnchantsAllowed = classListener.getEnchantsAllowed(ClassItemType.WEAPON);
-    boolean tridentEnchantsAllowed = classListener.getEnchantsAllowed(ClassItemType.TRIDENT);
-
-    if (disallowedList.stream().anyMatch(disallowed -> itemName.contains(disallowed)))
-      return false;
-    if (itemName.equals("trident") && item.getEnchantments().size() > 0 && !tridentEnchantsAllowed)
-      return false;
-    else if (item.getEnchantments().size() > 0 && !weaponEnchantsAllowed)
-      return false;
-    return true;
-  }
 }

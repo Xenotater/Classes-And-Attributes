@@ -2,6 +2,7 @@ package me.xenotater.classes_and_attributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -9,6 +10,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Panda.Gene;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.codingforcookies.armorequip.ArmorListener;
@@ -16,10 +18,19 @@ import com.codingforcookies.armorequip.DispenserArmorListener;
 import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
+import me.xenotater.classes_and_attributes.classes.ClassName;
 import me.xenotater.classes_and_attributes.classes.ClassesCompleter;
 import me.xenotater.classes_and_attributes.classes.ClassesHandler;
 import me.xenotater.classes_and_attributes.classes.CommonClassListener;
+import me.xenotater.classes_and_attributes.classes.objects.Assassin;
+import me.xenotater.classes_and_attributes.classes.objects.Berserker;
+import me.xenotater.classes_and_attributes.classes.objects.Cleric;
+import me.xenotater.classes_and_attributes.classes.objects.GenericClass;
+import me.xenotater.classes_and_attributes.classes.objects.Knight;
 import me.xenotater.classes_and_attributes.classes.objects.Mage;
+import me.xenotater.classes_and_attributes.classes.objects.Pyromancer;
+import me.xenotater.classes_and_attributes.classes.objects.Ranger;
+import me.xenotater.classes_and_attributes.classes.objects.Shaman;
 import me.xenotater.classes_and_attributes.common.DataManager;
 
 /*
@@ -41,20 +52,23 @@ public class Plugin extends JavaPlugin
 
   public Map<UUID, StopWatch> abilityCooldowns = new HashMap<>();
 
+  public Map<ClassName, GenericClass> classes = new HashMap<>();
+
   public void onEnable()
   {
     plugin = this;
     dataManager.initialize();
     initClassCommands();
+    initClasses();
     registerEvents();
     CustomBlockData.registerListener(plugin);
     Mage.createBrewerRecipe();
-    LOGGER.info("classes-and-attributes enabled");
+    LOGGER.info("Classes & Attributes Enabled");
   }
 
   public void onDisable()
   {
-    LOGGER.info("classes-and-attributes disabled");
+    LOGGER.info("Classes & Attributes Disabled");
   }
 
   private void registerEvents() {
@@ -73,5 +87,17 @@ public class Plugin extends JavaPlugin
   private void initCommand(String name, CommandExecutor handler, TabCompleter completer) {
     getCommand(name).setExecutor(handler);
     getCommand(name).setTabCompleter(completer);
+  }
+
+  private void initClasses() {
+    classes.put(ClassName.ASSASSIN, new Assassin());
+    classes.put(ClassName.BERSERKER, new Berserker());
+    classes.put(ClassName.CLERIC, new Cleric());
+    classes.put(ClassName.KNIGHT, new Knight());
+    classes.put(ClassName.MAGE, new Mage());
+    classes.put(ClassName.PYROMANCER, new Pyromancer());
+    classes.put(ClassName.SHAMAN, new Shaman());
+    classes.put(ClassName.RANGER, new Ranger());
+    classListener.setClasses(classes);
   }
 }

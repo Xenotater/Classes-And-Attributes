@@ -38,10 +38,13 @@ public class DataManager {
 
   public boolean setClass(UUID id, String className) {
     Player p = Bukkit.getPlayer(id);
-    if (getClass(id) == ClassName.RANGER) new Ranger().disablePassive(p); //remove ranger passive when switching off of it
+    ClassName cName = ClassName.getValue(className);
+    if (getClass(id) == ClassName.RANGER) ((Ranger) Plugin.plugin.classes.get(ClassName.RANGER)).disablePassive(p); //remove ranger passive when switching off of it
     Plugin.plugin.LOGGER.info("Updating class for player " + p.getDisplayName() + ": " + className);
     fileConfig.set(id + ".class", className);
-    if (getClass(id) == ClassName.RANGER) new Ranger().triggerPassive(p , null); //trigger passive if new class is ranger, or retrigger if failed to save
+    boolean saved = save();
+    if (getClass(id) == ClassName.RANGER)  Plugin.plugin.classes.get(ClassName.RANGER).triggerPassive(p , null); //trigger passive if new class is ranger, or retrigger if failed to save
+    if (saved) Plugin.plugin.classes.get(cName).checkArmor(p, cName);
     return save();
   }
 
