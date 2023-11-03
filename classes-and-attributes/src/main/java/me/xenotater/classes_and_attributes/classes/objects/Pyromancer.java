@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 import me.xenotater.classes_and_attributes.classes.ClassItemType;
 
@@ -39,9 +40,9 @@ public class Pyromancer extends GenericClass {
   public void triggerActive(Player p, Event e) {
     if (isAbilityReady(p)) {
       LargeFireball fireball = p.launchProjectile(LargeFireball.class);
-      fireball.setDirection(p.getLocation().getDirection());
       fireball.setShooter(p);
       fireball.setYield(3);
+      fireball.setVelocity(p.getLocation().getDirection().multiply(2));
       startAbilityCooldown(p);
       notifyAbilityTriggered(p, "Fireball");
     }

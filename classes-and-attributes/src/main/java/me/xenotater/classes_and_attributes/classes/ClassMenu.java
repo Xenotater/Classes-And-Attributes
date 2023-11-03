@@ -53,13 +53,13 @@ public class ClassMenu implements Listener {
     ClassInfo info = new ClassInfo(className);
     Inventory menu = Bukkit.createInventory(null, 9, className.getName() + " Class Info");
     menu.addItem(new ItemIcon(ChatColor.RED + "Back", "f84f597131bbe25dc058af888cb29831f79599bc67c95c802925ce4afba332fc"));
-    menu.setItem(1, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
+    menu.setItem(1, new ItemIcon(ChatColor.RESET + "", Material.GRAY_STAINED_GLASS_PANE));
     menu.addItem(info.info);
     menu.addItem(info.armor);
     menu.addItem(info.weapons);
     menu.addItem(info.passive);
     menu.addItem(info.active);
-    menu.setItem(7, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
+    menu.setItem(7, new ItemIcon(ChatColor.RESET + "", Material.GRAY_STAINED_GLASS_PANE));
     ItemIcon selectIcon = new ItemIcon(ChatColor.GREEN + "Select Class", "a79a5c95ee17abfef45c8dc224189964944d560f19a44f19f8a46aef3fee4756");
     selectIcon.addLore("" + ChatColor.BLUE + ChatColor.UNDERLINE + ChatColor.BOLD + className.getName());
     menu.addItem(selectIcon);
@@ -70,7 +70,7 @@ public class ClassMenu implements Listener {
     Inventory menu = Bukkit.createInventory(null, 9, "Confirm Class Change");
     menu.addItem(new ItemIcon(ChatColor.RED + "Cancel", Material.BARRIER));
     for (int i=1;i<=7;i++)
-      menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
+      menu.setItem(i, new ItemIcon(ChatColor.RESET + "", Material.GRAY_STAINED_GLASS_PANE));
     ItemIcon confirm = new ItemIcon(ChatColor.GREEN + "Confirm", "a79a5c95ee17abfef45c8dc224189964944d560f19a44f19f8a46aef3fee4756");
     confirm.addLore(ChatColor.RED + "Your class will be changed and you will lose");
     confirm.addLore(ChatColor.RED + "any benefits from your previous class.");
@@ -83,7 +83,7 @@ public class ClassMenu implements Listener {
     Inventory menu = Bukkit.createInventory(null, 9, "Confirm Class Change");
     menu.addItem(new ItemIcon(ChatColor.RED + "Cancel", Material.BARRIER));
     for (int i=1;i<=7;i++)
-      menu.setItem(i, new ItemIcon("", Material.GRAY_STAINED_GLASS_PANE));
+      menu.setItem(i, new ItemIcon(ChatColor.RESET + "", Material.GRAY_STAINED_GLASS_PANE));
     ItemIcon confirm = new ItemIcon(ChatColor.GREEN + "Confirm", "a79a5c95ee17abfef45c8dc224189964944d560f19a44f19f8a46aef3fee4756");
     confirm.addLore(ChatColor.RED  + target.getDisplayName() + "'s class will be changed and they will");
     confirm.addLore(ChatColor.RED + "lose any benefits from their previous class.");
@@ -110,7 +110,7 @@ public class ClassMenu implements Listener {
 
     final String iconName = ChatColor.stripColor(clickedIcon.getItemMeta().getDisplayName());
     final Player player = (Player) e.getWhoClicked();
-    final boolean isClassIcon = !nonClassNames.contains(iconName);
+    final boolean isClassIcon = clickedIcon.getType() == Material.PLAYER_HEAD && !nonClassNames.contains(iconName);
     final List<String> lore = clickedIcon.getItemMeta().getLore();
 
     if (isClassIcon) {

@@ -24,7 +24,6 @@ public class Ranger extends GenericClass {
   public void triggerPassive(Player p, Event e) {
     setEffect(p, new PotionEffect(PotionEffectType.SPEED, -1, 1, false, false, true));
     setEffect(p, new PotionEffect(PotionEffectType.DOLPHINS_GRACE, -1, 0, false, false, true));
-    setEffect(p, new PotionEffect(PotionEffectType.SLOW_FALLING, -1, 0, false, false, true));
     notifyAbilityTriggered(p, "Stride");
   }
 
@@ -43,7 +42,6 @@ public class Ranger extends GenericClass {
   public void disablePassive(Player p) {
     p.removePotionEffect(PotionEffectType.SPEED);
     p.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
-    p.removePotionEffect(PotionEffectType.SLOW_FALLING);
   }
 
   private void setEffect(Player p, PotionEffect effect) {

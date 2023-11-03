@@ -37,7 +37,7 @@ public class Mage extends GenericClass {
   
   public Mage() {
     disallowedArmor = new String[]{"chainmail", "iron", "diamond", "netherite"};
-    disallowedWeapons = new String[]{"_axe", "trident"};
+    disallowedWeapons = new String[]{"iron_sword", "diamond_sword", "netherite_sword" + "_axe", "trident"};
     disallowedInteracts = new String[]{"shield", "trident"};
     enchantsAllowed.put(ClassItemType.ARMOR, false);
     enchantsAllowed.put(ClassItemType.BOW, false);

@@ -17,8 +17,8 @@ public class Knight extends GenericClass {
   public Knight() {
     disallowedInteracts = new String[]{"bow", "crossbow"};
     enchantsAllowed.put(ClassItemType.TRIDENT, false);
-    abilityDuration = 5000;
-    abilityCooldown = 15000;
+    abilityDuration = 10000;
+    abilityCooldown = 25000;
     setNegativeEffects();
   }
 
@@ -39,7 +39,7 @@ public class Knight extends GenericClass {
   //Adrenaline Rush
   public void triggerActive(Player p, Event e) {
     if (isAbilityReady(p)) {
-      p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 2, false, false, true));
+      p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 2, false, false, true));
       startAbilityCooldown(p);
       notifyAbilityTriggered(p, "Adrenaline Rush");
     }

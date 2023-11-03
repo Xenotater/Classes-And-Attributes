@@ -1,6 +1,8 @@
 package me.xenotater.classes_and_attributes.classes;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -20,6 +22,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -27,6 +31,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -39,6 +44,7 @@ import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.classes.objects.GenericClass;
+import me.xenotater.classes_and_attributes.classes.objects.Ranger;
 import me.xenotater.classes_and_attributes.classes.objects.Shaman;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
@@ -99,7 +105,8 @@ public class CommonClassListener implements Listener {
       }
 
       //All Active Abilities
-      if (player.isSneaking() && item != null && !item.getType().isBlock())
+      List<String> disallowedActivates = Arrays.asList(new String[] {"bow", "crossbow", "shield", "trident"});
+      if (player.isSneaking() && item != null && !item.getType().isBlock() && !disallowedActivates.contains(item.getType().name().toLowerCase()))
         classes.get(className).triggerActive(player, e);
     }
   }
@@ -185,6 +192,30 @@ public class CommonClassListener implements Listener {
       Runnable passiveTrigger = new Runnable() {@Override public void run() {classes.get(ClassName.RANGER).triggerPassive(player, e);}};
       Bukkit.getScheduler().runTaskLater(Plugin.plugin, passiveTrigger, 5); 
     }
+    else {
+      Runnable disablePassive = new Runnable() {@Override public void run() {((Ranger) classes.get(ClassName.RANGER)).disablePassive(player);}};
+      Bukkit.getScheduler().runTaskLater(Plugin.plugin, disablePassive, 5); 
+    }
+  }
+
+  //Ranger Passive Ability
+  @EventHandler
+  private void onDamaged(final EntityDamageEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+      if (e.getCause() == DamageCause.FALL && className == ClassName.RANGER)
+        e.setCancelled(true);
+    }
+  }
+
+  //..Ranger Passive Ability
+  @EventHandler
+  private void onDeath(final PlayerRespawnEvent e) {
+    Player player = e.getPlayer();
+    ClassName className = Plugin.plugin.dataManager.getClass(player.getUniqueId());
+    if (className == ClassName.RANGER)
+      classes.get(ClassName.RANGER).triggerPassive(player, e);
   }
 
   //Restrict Mage Passive Ability
