@@ -6,7 +6,7 @@ author: Xenotater
 description: A Minecraft plugin that adds RPG classes and special character attributes.
 commands:
   classes:
-    description: Select or see information about classes.
+    description: Select or see information about classes
     usage: /<command> [class]
     aliases: [class, cls]
   setclass:
@@ -17,3 +17,19 @@ commands:
     description: Remove your class
     usage: /removeclass
     aliases: delclass
+  attributes:
+    description: Check your attributes or see information about an attribute
+    usage: /attributes [attribute]
+    aliases: [attribute, attr]
+  addattribute:
+    description: add an attribute to someone
+    usage: /addattribute <attribute>
+    aliases: [addattr]
+  removeattribute:
+    description: remove an attribute from someone
+    usage: /removeattribute <attribute>
+    aliases: [delattribute, delattr]
+  changediet:
+    description: change someones diet
+    usage: /changediet <player> <diet>
+    aliases: swapdiet

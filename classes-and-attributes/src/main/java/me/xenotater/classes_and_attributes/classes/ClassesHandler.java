@@ -63,7 +63,7 @@ public class ClassesHandler implements CommandExecutor {
               className = ClassName.getRandom();
             if (!(sender instanceof Player)) {
               boolean success = Plugin.plugin.dataManager.setClass(target.getUniqueId(), className.getName());
-              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : "An error occurred while updating the target's class.");
+              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : ChatColor.RED + "An error occurred while updating the target's class.");
               if (success)
                 target.sendMessage("Your class was updated. You now have the " + className.getName() + " class!");
               return true;
@@ -99,7 +99,7 @@ public class ClassesHandler implements CommandExecutor {
           Player target = Bukkit.getPlayerExact(args[0]);
           if (!(sender instanceof Player)) {
               boolean success = Plugin.plugin.dataManager.setClass(target.getUniqueId(), "No Class");
-              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : "An error occurred while updating the target's class.");
+              sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s class was updated." : ChatColor.RED + "An error occurred while updating the target's class.");
               if (success)
                 target.sendMessage("Your class was updated. You now have no class.");
             return true;
@@ -119,6 +119,6 @@ public class ClassesHandler implements CommandExecutor {
     }
     else
       sender.sendMessage(ChatColor.RED + "An error occurred.");
-      return true;
+    return true;
   }
 }

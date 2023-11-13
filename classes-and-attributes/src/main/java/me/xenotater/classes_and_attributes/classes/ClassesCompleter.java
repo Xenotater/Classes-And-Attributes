@@ -1,18 +1,21 @@
 package me.xenotater.classes_and_attributes.classes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class ClassesCompleter implements TabCompleter {
-  String[] classes = {"Random", "Assassin", "Berserker", "Cleric", "Knight", "Mage", "Pyromancer", "Shaman", "Ranger"};
-  List<String> classesList = Arrays.asList(classes);
+import me.xenotater.classes_and_attributes.common.AbstractTabCompleter;
+
+public class ClassesCompleter extends AbstractTabCompleter {
+  List<String> classesList = new ArrayList<>();
+
+  public ClassesCompleter() {
+    setClassesList();
+  }
 
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -52,14 +55,9 @@ public class ClassesCompleter implements TabCompleter {
     return null;
   }
 
-  private List<String> filterCompletions(List<String> list, String arg) {
-    if (arg.equals(""))
-      return list;
-    List<String> filteredList = new ArrayList<>();
-    for (String option: list) {
-      if (option.regionMatches(true, 0, arg, 0, arg.length()))
-        filteredList.add(option);
-    }
-    return filteredList;
+  private void setClassesList() {
+    ClassName[] classes = ClassName.values();
+    for (ClassName className : classes)
+      classesList.add(className.getName());
   }
 }

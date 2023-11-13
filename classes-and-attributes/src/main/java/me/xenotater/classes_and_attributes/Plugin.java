@@ -10,13 +10,16 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Panda.Gene;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.codingforcookies.armorequip.ArmorListener;
 import com.codingforcookies.armorequip.DispenserArmorListener;
 import com.jeff_media.customblockdata.CustomBlockData;
 
+import me.xenotater.classes_and_attributes.attributes.AttributeMenu;
+import me.xenotater.classes_and_attributes.attributes.AttributesCompleter;
+import me.xenotater.classes_and_attributes.attributes.AttributesHandler;
+import me.xenotater.classes_and_attributes.attributes.CommonAttributeListener;
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
 import me.xenotater.classes_and_attributes.classes.ClassName;
 import me.xenotater.classes_and_attributes.classes.ClassesCompleter;
@@ -50,6 +53,11 @@ public class Plugin extends JavaPlugin
   private ClassMenu classMenu = new ClassMenu();
   private CommonClassListener classListener = new CommonClassListener();
 
+  private AttributesHandler attributesHandler = new AttributesHandler();
+  private AttributesCompleter attributesCompleter = new AttributesCompleter();
+  private AttributeMenu attributeMenu = new AttributeMenu();
+  private CommonAttributeListener attributeListener = new CommonAttributeListener();
+
   public Map<UUID, StopWatch> abilityCooldowns = new HashMap<>();
 
   public Map<ClassName, GenericClass> classes = new HashMap<>();
@@ -58,8 +66,12 @@ public class Plugin extends JavaPlugin
   {
     plugin = this;
     dataManager.initialize();
+    LOGGER.info("Initializing Classes...");
     initClassCommands();
     initClasses();
+    LOGGER.info("Initializing Attributes...");
+    initAttributeCommands();
+    LOGGER.info("Initializing events and listeners...");
     registerEvents();
     CustomBlockData.registerListener(plugin);
     Mage.createBrewerRecipe();
@@ -76,12 +88,21 @@ public class Plugin extends JavaPlugin
     getServer().getPluginManager().registerEvents(dispenserListener, plugin);
     getServer().getPluginManager().registerEvents(classMenu, plugin);
     getServer().getPluginManager().registerEvents(classListener, plugin);
+    getServer().getPluginManager().registerEvents(attributeMenu, plugin);
+    getServer().getPluginManager().registerEvents(attributeListener, plugin);
   }
 
   private void initClassCommands() {
     initCommand("classes", classesHandler, classesCompleter);
     initCommand("setclass", classesHandler, classesCompleter);
     initCommand("removeclass", classesHandler, classesCompleter);
+  }
+
+  private void initAttributeCommands() {
+    initCommand("attributes", attributesHandler, attributesCompleter);
+    initCommand("addattribute", attributesHandler, attributesCompleter);
+    initCommand("removeattribute", attributesHandler, attributesCompleter);
+    initCommand("changediet", attributesHandler, attributesCompleter);
   }
 
   private void initCommand(String name, CommandExecutor handler, TabCompleter completer) {
