@@ -32,4 +32,8 @@ commands:
   changediet:
     description: change someones diet
     usage: /changediet <player> <diet>
-    aliases: swapdiet
+    aliases: [swapdiet, setdiet]
+  setcurse:
+    description: give someone a curse
+    usage: /setcurse <player> <curse>
+    aliases: curse

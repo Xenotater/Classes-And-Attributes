@@ -17,23 +17,17 @@ import com.codingforcookies.armorequip.DispenserArmorListener;
 import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.attributes.AttributeMenu;
+import me.xenotater.classes_and_attributes.attributes.AttributeName;
 import me.xenotater.classes_and_attributes.attributes.AttributesCompleter;
 import me.xenotater.classes_and_attributes.attributes.AttributesHandler;
 import me.xenotater.classes_and_attributes.attributes.CommonAttributeListener;
+import me.xenotater.classes_and_attributes.attributes.objects.GenericAttribute;
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
 import me.xenotater.classes_and_attributes.classes.ClassName;
 import me.xenotater.classes_and_attributes.classes.ClassesCompleter;
 import me.xenotater.classes_and_attributes.classes.ClassesHandler;
 import me.xenotater.classes_and_attributes.classes.CommonClassListener;
-import me.xenotater.classes_and_attributes.classes.objects.Assassin;
-import me.xenotater.classes_and_attributes.classes.objects.Berserker;
-import me.xenotater.classes_and_attributes.classes.objects.Cleric;
-import me.xenotater.classes_and_attributes.classes.objects.GenericClass;
-import me.xenotater.classes_and_attributes.classes.objects.Knight;
-import me.xenotater.classes_and_attributes.classes.objects.Mage;
-import me.xenotater.classes_and_attributes.classes.objects.Pyromancer;
-import me.xenotater.classes_and_attributes.classes.objects.Ranger;
-import me.xenotater.classes_and_attributes.classes.objects.Shaman;
+import me.xenotater.classes_and_attributes.classes.objects.*;
 import me.xenotater.classes_and_attributes.common.DataManager;
 
 /*
@@ -59,8 +53,11 @@ public class Plugin extends JavaPlugin
   private CommonAttributeListener attributeListener = new CommonAttributeListener();
 
   public Map<UUID, StopWatch> abilityCooldowns = new HashMap<>();
+  public Map<UUID, StopWatch> dietCooldowns = new HashMap<>();
+  public Map<UUID, StopWatch> curseTimers = new HashMap<>();
 
   public Map<ClassName, GenericClass> classes = new HashMap<>();
+  public Map<AttributeName, GenericAttribute> attributes = new HashMap<>();
 
   public void onEnable()
   {
@@ -71,6 +68,7 @@ public class Plugin extends JavaPlugin
     initClasses();
     LOGGER.info("Initializing Attributes...");
     initAttributeCommands();
+    initAttributes();
     LOGGER.info("Initializing events and listeners...");
     registerEvents();
     CustomBlockData.registerListener(plugin);
@@ -120,5 +118,19 @@ public class Plugin extends JavaPlugin
     classes.put(ClassName.SHAMAN, new Shaman());
     classes.put(ClassName.RANGER, new Ranger());
     classListener.setClasses(classes);
+  }
+
+  private void initAttributes() {
+    try {
+      for (AttributeName attribute : AttributeName.values()) {
+        Class<?> cls = Class.forName("me.xenotater.classes_and_attributes.attributes.objects." + attribute.getName().replace(" ", ""));
+        attributes.put(attribute, (GenericAttribute) cls.newInstance());
+      }
+      attributeListener.setAttributes(attributes);
+    }
+    catch (Exception e) {
+      LOGGER.warning("Error loading Attributes: " + e);
+      getServer().getPluginManager().disablePlugin(plugin);
+    }
   }
 }

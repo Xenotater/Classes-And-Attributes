@@ -95,4 +95,15 @@ public class DataManager {
   public AttributeName getDiet(UUID id) {
     return AttributeName.getValue(fileConfig.getString(id + ".diet"));
   }
+
+  public boolean setCurse(UUID id, String curse) {
+    Player p = Bukkit.getPlayer(id);
+    Plugin.plugin.LOGGER.info("Updating curse for player " + p.getDisplayName() + ": " + curse);
+    fileConfig.set(id + ".curse", curse);
+    return save();
+  }
+
+  public AttributeName getCurse(UUID id) {
+    return AttributeName.getValue(fileConfig.getString(id + ".curse"));
+  }
 }

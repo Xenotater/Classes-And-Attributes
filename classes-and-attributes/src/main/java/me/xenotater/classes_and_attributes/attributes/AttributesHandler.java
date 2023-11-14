@@ -110,14 +110,38 @@ public class AttributesHandler implements CommandExecutor {
           return true;
         }
         AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
-        if (attribute == null) {
-          sender.sendMessage(ChatColor.RED + "Invalid attribute.");
+        if (attribute == null || attribute.getType() != AttributeType.DIET) {
+          sender.sendMessage(ChatColor.RED + "Invalid diet.");
           return true;
         }
         boolean success = Plugin.plugin.dataManager.changeDiet(target.getUniqueId(), attribute.getName());
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s diet was updated." : ChatColor.RED + "An error occurred while updating the target's diet.");
         if (success)
           target.sendMessage(ChatColor.YELLOW + "You're diet was changed to " + attribute.getColoredName() + ChatColor.YELLOW + ".");
+      }
+      return true;
+    }
+    else if (command.getName().equals("setcurse")) {
+      if (sender instanceof Player && !sender.isOp()) {
+        sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+      }
+      else {
+        if (args.length != 2)
+          return false;
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+          sender.sendMessage(ChatColor.RED + "Player not found.");
+          return true;
+        }
+        AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
+        if (attribute == null || attribute.getType() != AttributeType.CURSE) {
+          sender.sendMessage(ChatColor.RED + "Invalid curse.");
+          return true;
+        }
+        boolean success = Plugin.plugin.dataManager.setCurse(target.getUniqueId(), attribute.getName());
+        sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s curse was updated." : ChatColor.RED + "An error occurred while updating the target's curse.");
+        if (success)
+          target.sendMessage(ChatColor.YELLOW + "You've been given the " + attribute.getColoredName() + ChatColor.YELLOW + " curse.");
       }
       return true;
     }
