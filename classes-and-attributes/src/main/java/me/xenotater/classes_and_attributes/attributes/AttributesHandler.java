@@ -33,6 +33,10 @@ public class AttributesHandler implements CommandExecutor {
         if (args.length != 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+          sender.sendMessage(ChatColor.RED + "Player not found.");
+          return true;
+        }
         List<AttributeName> playerAttribtues = Plugin.plugin.dataManager.getAttibutes(target.getUniqueId());
         AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
         if (args[1].equals("Random")) {
@@ -41,14 +45,16 @@ public class AttributesHandler implements CommandExecutor {
             sender.sendMessage(ChatColor.WHITE + "No attributes to add.");
           }
         }
-        if (target == null || attribute == null)
-          return false;
+        if (attribute == null) {
+          sender.sendMessage(ChatColor.RED + "Invalid attribute.");
+          return true;
+        }
         if (attribute.isDiet()) {
           sender.sendMessage(ChatColor.WHITE + "Use /swapdiet <player> <diet>");
           return true;
         }
         if (playerAttribtues.contains(attribute)) {
-          sender.sendMessage(ChatColor.WHITE + "Player already has that attribute.");
+          sender.sendMessage(ChatColor.RED + "Player already has that attribute.");
           return true;
         }
         boolean success = Plugin.plugin.dataManager.addAttribute(target.getUniqueId(), attribute.getName());
@@ -66,10 +72,16 @@ public class AttributesHandler implements CommandExecutor {
         if (args.length != 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+          sender.sendMessage(ChatColor.RED + "Player not found.");
+          return true;
+        }
         List<AttributeName> playerAttribtues = Plugin.plugin.dataManager.getAttibutes(target.getUniqueId());
         AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
-        if (target == null || attribute == null)
-          return false;
+        if (attribute == null) {
+          sender.sendMessage(ChatColor.RED + "Invalid attribute.");
+          return true;
+        }
         if (attribute.isDiet()) {
           sender.sendMessage(ChatColor.WHITE + "Use /changediet <player> <diet>");
           return true;
@@ -93,9 +105,15 @@ public class AttributesHandler implements CommandExecutor {
         if (args.length != 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+          sender.sendMessage(ChatColor.RED + "Player not found.");
+          return true;
+        }
         AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
-        if (target == null || attribute == null || !attribute.isDiet())
-          return false;
+        if (attribute == null) {
+          sender.sendMessage(ChatColor.RED + "Invalid attribute.");
+          return true;
+        }
         boolean success = Plugin.plugin.dataManager.changeDiet(target.getUniqueId(), attribute.getName());
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s diet was updated." : ChatColor.RED + "An error occurred while updating the target's diet.");
         if (success)
