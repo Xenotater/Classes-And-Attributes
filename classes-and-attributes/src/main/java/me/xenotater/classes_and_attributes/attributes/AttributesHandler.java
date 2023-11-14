@@ -49,7 +49,7 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.RED + "Invalid attribute.");
           return true;
         }
-        if (attribute.isDiet()) {
+        if (attribute.getType() == AttributeType.DIET) {
           sender.sendMessage(ChatColor.WHITE + "Use /swapdiet <player> <diet>");
           return true;
         }
@@ -82,7 +82,7 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.RED + "Invalid attribute.");
           return true;
         }
-        if (attribute.isDiet()) {
+        if (attribute.getType() == AttributeType.DIET) {
           sender.sendMessage(ChatColor.WHITE + "Use /changediet <player> <diet>");
           return true;
         }

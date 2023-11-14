@@ -52,6 +52,10 @@ public enum AttributeName {
     return this.name;
   }
 
+  public AttributeType getType() {
+    return type;
+  }
+
   public String getColoredName() {
     return getColor() + getName();
   }
@@ -78,38 +82,20 @@ public enum AttributeName {
       return dietAttributes.get(rand);
   }
 
-  public boolean isPositive() {
-    return type == AttributeType.POSITIVE;
-  }
-
-  public boolean isNegative() {
-    return type == AttributeType.NEGATIVE;
-  }
-
-  public boolean isDiet() {
-    return type == AttributeType.DIET;
-  }
-
-  public boolean isCurse() {
-    return type == AttributeType.CURSE;
+  public static AttributeName getRandomCurse() {
+      Integer rand = new Random().nextInt(dietAttributes.size());
+      return curseAttributes.get(rand);
   }
 
   private ChatColor getColor() {
-    if (isDiet())
+    if (type == AttributeType.DIET)
       return ChatColor.YELLOW;
-    else if (isPositive())
+    else if (type == AttributeType.POSITIVE)
       return ChatColor.GREEN;
-    else if (isNegative())
+    else if (type == AttributeType.NEGATIVE)
       return ChatColor.RED;
-    else if (isCurse())
+    else if (type == AttributeType.CURSE)
       return ChatColor.DARK_PURPLE;
     return ChatColor.RESET;
-  }
-
-  private static enum AttributeType {
-    DIET,
-    POSITIVE,
-    NEGATIVE,
-    CURSE;
   }
 }
