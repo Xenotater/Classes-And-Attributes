@@ -2,7 +2,7 @@ package me.xenotater.classes_and_attributes.attributes.objects;
 
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 
-public class Starvation extends GenericAttribute {
+public class Starvation extends GenericCurse {
   public Starvation() {
     AttributeName attribute = AttributeName.STARVATION;
     name = attribute.getName();

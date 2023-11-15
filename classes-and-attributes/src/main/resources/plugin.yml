@@ -19,7 +19,7 @@ commands:
     aliases: delclass
   attributes:
     description: Check your attributes or see information about an attribute
-    usage: /attributes [attribute]
+    usage: /attributes [attribute]  
     aliases: [attribute, attr]
   addattribute:
     description: add an attribute to someone

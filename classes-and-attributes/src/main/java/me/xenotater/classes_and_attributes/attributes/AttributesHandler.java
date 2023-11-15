@@ -2,7 +2,6 @@ package me.xenotater.classes_and_attributes.attributes;
 
 import java.util.List;
 
-import org.apache.commons.collections4.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.xenotater.classes_and_attributes.Plugin;
+import me.xenotater.classes_and_attributes.attributes.objects.GenericCurse;
+import me.xenotater.classes_and_attributes.attributes.objects.GenericDiet;
 import net.md_5.bungee.api.ChatColor;
 
 public class AttributesHandler implements CommandExecutor {
@@ -30,7 +31,7 @@ public class AttributesHandler implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
       }
       else {
-        if (args.length != 2)
+        if (args.length < 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
@@ -53,14 +54,16 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.WHITE + "Use /swapdiet <player> <diet>");
           return true;
         }
+        if (attribute.getType() == AttributeType.CURSE) {
+          sender.sendMessage(ChatColor.WHITE + "Use /curse <player> <curse>");
+          return true;
+        }
         if (playerAttribtues.contains(attribute)) {
           sender.sendMessage(ChatColor.RED + "Player already has that attribute.");
           return true;
         }
-        boolean success = Plugin.plugin.dataManager.addAttribute(target.getUniqueId(), attribute.getName());
+        boolean success = Plugin.plugin.attributes.get(attribute).addForPlayer(target);
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s attributes were updated." : ChatColor.RED + "An error occurred while updating the target's attributes.");
-        if (success)
-          target.sendMessage(ChatColor.YELLOW + "You've been given the " + attribute.getColoredName() + ChatColor.YELLOW + " attribute.");
       }
       return true;
     }
@@ -69,7 +72,7 @@ public class AttributesHandler implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
       }
       else {
-        if (args.length != 2)
+        if (args.length < 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
@@ -86,14 +89,16 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.WHITE + "Use /changediet <player> <diet>");
           return true;
         }
+        if (attribute.getType() == AttributeType.CURSE) {
+          sender.sendMessage(ChatColor.WHITE + "Use /curse <player> <curse>");
+          return true;
+        }
         if (!playerAttribtues.contains(attribute)) {
           sender.sendMessage(ChatColor.WHITE + "Player does not have that attribute.");
           return true;
         }
-        boolean success = Plugin.plugin.dataManager.removeAttribute(target.getUniqueId(), attribute.getName());
+        boolean success = Plugin.plugin.attributes.get(attribute).removeForPlayer(target);
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s attributes were updated." : ChatColor.RED + "An error occurred while updating the target's attributes.");
-        if (success)
-          target.sendMessage(ChatColor.YELLOW + "You've lost the " + attribute.getColoredName() + ChatColor.YELLOW + " attribute.");
       }
       return true;
     }
@@ -102,7 +107,7 @@ public class AttributesHandler implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
       }
       else {
-        if (args.length != 2)
+        if (args.length < 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
@@ -114,10 +119,8 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.RED + "Invalid diet.");
           return true;
         }
-        boolean success = Plugin.plugin.dataManager.changeDiet(target.getUniqueId(), attribute.getName());
+        boolean success = ((GenericDiet) Plugin.plugin.attributes.get(attribute)).addForPlayer(target);
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s diet was updated." : ChatColor.RED + "An error occurred while updating the target's diet.");
-        if (success)
-          target.sendMessage(ChatColor.YELLOW + "You're diet was changed to " + attribute.getColoredName() + ChatColor.YELLOW + ".");
       }
       return true;
     }
@@ -126,22 +129,30 @@ public class AttributesHandler implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
       }
       else {
-        if (args.length != 2)
+        if (args.length < 2)
           return false;
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
           sender.sendMessage(ChatColor.RED + "Player not found.");
           return true;
         }
-        AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
-        if (attribute == null || attribute.getType() != AttributeType.CURSE) {
-          sender.sendMessage(ChatColor.RED + "Invalid curse.");
-          return true;
+        boolean success;
+        if (args[1].equals("None")) {
+          AttributeName currentCurse = Plugin.plugin.dataManager.getCurse(target.getUniqueId());
+          if (currentCurse != null)
+            success = Plugin.plugin.attributes.get(currentCurse).removeForPlayer(target);
+          else
+            success = true;
         }
-        boolean success = Plugin.plugin.dataManager.setCurse(target.getUniqueId(), attribute.getName());
+        else {
+          AttributeName attribute = AttributeName.getValue(args[1].replaceAll("_", " "));
+          if (attribute == null || attribute.getType() != AttributeType.CURSE) {
+            sender.sendMessage(ChatColor.RED + "Invalid curse.");
+            return true;
+          }
+          success = ((GenericCurse) Plugin.plugin.attributes.get(attribute)).addForPlayer(target);
+        }
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s curse was updated." : ChatColor.RED + "An error occurred while updating the target's curse.");
-        if (success)
-          target.sendMessage(ChatColor.YELLOW + "You've been given the " + attribute.getColoredName() + ChatColor.YELLOW + " curse.");
       }
       return true;
     }
@@ -153,7 +164,7 @@ public class AttributesHandler implements CommandExecutor {
   private AttributeName getRandomAttribute(Player player) {
     AttributeName attribute = null;
     List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
-    if (ListUtils.subtract(AttributeName.nonDietAttributes, playerAttributes).isEmpty())
+    if (playerAttributes.isEmpty())
       return attribute;
     boolean found = false;
     while (!found) {

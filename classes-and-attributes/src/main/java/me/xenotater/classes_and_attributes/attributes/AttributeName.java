@@ -57,7 +57,7 @@ public enum AttributeName {
   }
 
   public String getColoredName() {
-    return getColor() + getName();
+    return type.getColor() + name;
   }
 
   public static AttributeName getValue(String name) {
@@ -70,11 +70,11 @@ public enum AttributeName {
 
   public static List<AttributeName> dietAttributes = Arrays.asList(new AttributeName[]{CANNIBAL, CARNIVORE, EARTHY, FORAGER, PESCITARIAN, PICKY, SWEET_TOOTH, VEGETARIAN});
   public static List<AttributeName> curseAttributes = Arrays.asList(new AttributeName[]{CLUMSY, DEAD_WEIGHT, HEMOPHILIA, PACIFIST, STARVATION, VOIDTOUCHED});
-  public static List<AttributeName> nonDietAttributes = ListUtils.subtract(ListUtils.subtract(Arrays.asList(values()), dietAttributes), curseAttributes);
+  public static List<AttributeName> regularAttributes = ListUtils.subtract(ListUtils.subtract(Arrays.asList(values()), dietAttributes), curseAttributes);
   
   public static AttributeName getRandom() {
-    Integer rand = new Random().nextInt(nonDietAttributes.size());
-    return nonDietAttributes.get(rand);
+    Integer rand = new Random().nextInt(regularAttributes.size());
+    return regularAttributes.get(rand);
   }
 
   public static AttributeName getRandomDiet() {
@@ -83,19 +83,7 @@ public enum AttributeName {
   }
 
   public static AttributeName getRandomCurse() {
-      Integer rand = new Random().nextInt(dietAttributes.size());
+      Integer rand = new Random().nextInt(curseAttributes.size());
       return curseAttributes.get(rand);
-  }
-
-  private ChatColor getColor() {
-    if (type == AttributeType.DIET)
-      return ChatColor.YELLOW;
-    else if (type == AttributeType.POSITIVE)
-      return ChatColor.GREEN;
-    else if (type == AttributeType.NEGATIVE)
-      return ChatColor.RED;
-    else if (type == AttributeType.CURSE)
-      return ChatColor.DARK_PURPLE;
-    return ChatColor.RESET;
   }
 }

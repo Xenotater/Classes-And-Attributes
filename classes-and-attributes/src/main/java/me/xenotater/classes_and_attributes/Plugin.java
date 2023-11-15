@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -54,7 +55,7 @@ public class Plugin extends JavaPlugin
 
   public Map<UUID, StopWatch> abilityCooldowns = new HashMap<>();
   public Map<UUID, StopWatch> dietCooldowns = new HashMap<>();
-  public Map<UUID, StopWatch> curseTimers = new HashMap<>();
+  public Map<UUID, Timer> curseTimers = new HashMap<>();
 
   public Map<ClassName, GenericClass> classes = new HashMap<>();
   public Map<AttributeName, GenericAttribute> attributes = new HashMap<>();
@@ -101,6 +102,7 @@ public class Plugin extends JavaPlugin
     initCommand("addattribute", attributesHandler, attributesCompleter);
     initCommand("removeattribute", attributesHandler, attributesCompleter);
     initCommand("changediet", attributesHandler, attributesCompleter);
+    initCommand("setcurse", attributesHandler, attributesCompleter);
   }
 
   private void initCommand(String name, CommandExecutor handler, TabCompleter completer) {

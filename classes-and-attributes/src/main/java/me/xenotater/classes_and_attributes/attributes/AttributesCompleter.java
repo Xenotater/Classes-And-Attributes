@@ -15,10 +15,12 @@ import me.xenotater.classes_and_attributes.common.AbstractTabCompleter;
 public class AttributesCompleter extends AbstractTabCompleter {
   List<String> attribtuesList = new ArrayList<>();
   List<String> dietList = new ArrayList<>();
+  List<String> curseList = new ArrayList<>();
 
   public AttributesCompleter() {
     setAttributesList();
     setDietList();
+    setCurseList();
   }
 
   @Override
@@ -50,6 +52,8 @@ public class AttributesCompleter extends AbstractTabCompleter {
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target != null) {
           List<String> playerAttributes = Plugin.plugin.dataManager.getAttributeStrings(Bukkit.getPlayerExact(args[0]).getUniqueId());
+          for (String attribute : playerAttributes)
+            attribute.replace(" ", "_");
           return filterCompletions(playerAttributes, args[1]);
         }
         return filterCompletions(attribtuesList, args[1]);
@@ -65,11 +69,20 @@ public class AttributesCompleter extends AbstractTabCompleter {
       }
       return filterCompletions(playerList, args[0]);
     }
+    else if (command.getName().equals("setcurse") && sender.isOp()) {
+      List<String> playerList = new ArrayList<>();
+      for (Player p : Bukkit.getOnlinePlayers())
+        playerList.add(p.getName());
+      if (args.length > 1) {
+        return filterCompletions(curseList, args[1]);
+      }
+      return filterCompletions(playerList, args[0]);
+    }
     return null;
   }
 
   private void setAttributesList() {
-    List<AttributeName> attributes = AttributeName.nonDietAttributes;
+    List<AttributeName> attributes = AttributeName.regularAttributes;
     for (AttributeName attribute : attributes)
       attribtuesList.add(attribute.getName().replaceAll(" ", "_"));
   }
@@ -78,5 +91,12 @@ public class AttributesCompleter extends AbstractTabCompleter {
     List<AttributeName> diets = AttributeName.dietAttributes;
     for (AttributeName diet : diets)
       dietList.add(diet.getName().replaceAll(" ", "_"));
+  }
+
+  private void setCurseList() {
+    List<AttributeName> curses = AttributeName.curseAttributes;
+    for (AttributeName curse : curses)
+      curseList.add(curse.getName().replaceAll(" ", "_"));
+    curseList.add("None");
   }
 }
