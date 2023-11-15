@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.collections4.ListUtils;
-import org.bukkit.ChatColor;
 
 public enum AttributeName {
   CANNIBAL("Cannibal", AttributeType.DIET),

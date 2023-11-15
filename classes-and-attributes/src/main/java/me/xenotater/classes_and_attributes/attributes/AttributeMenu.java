@@ -18,7 +18,7 @@ public class AttributeMenu implements Listener  {
     int curseVal = curse != null ? 1 : 0;
     List<AttributeName> attributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
     int numAttrs = attributes != null ? attributes.size() : 0;
-    int numRows = (int) Math.ceil((numAttrs + 1 + curseVal) / 9);
+    int numRows = (int) Math.ceil((numAttrs + 1 + curseVal) / 9.0);
 
     Inventory menu = Bukkit.createInventory(null, 9 * numRows, "Attributes");
     menu.addItem(new AttributeInfo(diet));

@@ -51,9 +51,7 @@ public class AttributesCompleter extends AbstractTabCompleter {
       if (args.length > 1) {
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target != null) {
-          List<String> playerAttributes = Plugin.plugin.dataManager.getAttributeStrings(Bukkit.getPlayerExact(args[0]).getUniqueId());
-          for (String attribute : playerAttributes)
-            attribute.replace(" ", "_");
+          List<String> playerAttributes = getPlayerAttributes(target);
           return filterCompletions(playerAttributes, args[1]);
         }
         return filterCompletions(attribtuesList, args[1]);
@@ -98,5 +96,13 @@ public class AttributesCompleter extends AbstractTabCompleter {
     for (AttributeName curse : curses)
       curseList.add(curse.getName().replaceAll(" ", "_"));
     curseList.add("None");
+  }
+
+  private List<String> getPlayerAttributes(Player p) {
+    List<String> options = new ArrayList<>();
+    List<String> attributes = Plugin.plugin.dataManager.getAttributeStrings(p.getUniqueId());
+    for (String attribute : attributes)
+      options.add(attribute.replace(" ", "_"));
+    return options;
   }
 }
