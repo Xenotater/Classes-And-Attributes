@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import me.xenotater.classes_and_attributes.Plugin;
+import me.xenotater.classes_and_attributes.attributes.AttributeName;
 import me.xenotater.classes_and_attributes.classes.ClassItemType;
 
 public class Knight extends GenericClass {
@@ -28,7 +30,10 @@ public class Knight extends GenericClass {
       EntityPotionEffectEvent event = (EntityPotionEffectEvent) e;
       if (event.getNewEffect() != null) {
         PotionEffectType effect = event.getNewEffect().getType();
+        AttributeName curse = Plugin.plugin.dataManager.getCurse(p.getUniqueId());
         if (negativeEffects.contains(effect)) {
+          if ((effect.equals(PotionEffectType.HUNGER) && curse == AttributeName.STARVATION) || (effect.equals(PotionEffectType.DARKNESS) && curse == AttributeName.VOIDTOUCHED))
+            return;
           event.setCancelled(true);
           notifyAbilityTriggered(p, "Hardy");
         }

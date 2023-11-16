@@ -98,6 +98,8 @@ public class DataManager {
 
   public boolean setCurse(UUID id, String curse) {
     Player p = Bukkit.getPlayer(id);
+    if (p == null)
+      return false;
     Plugin.plugin.LOGGER.info("Updating curse for player " + p.getDisplayName() + ": " + curse);
     fileConfig.set(id + ".curse", curse);
     return save();

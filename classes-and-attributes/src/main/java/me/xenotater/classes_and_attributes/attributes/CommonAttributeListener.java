@@ -10,9 +10,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
@@ -67,7 +72,7 @@ public class CommonAttributeListener implements Listener {
 
     //Gourmand Condition
     if (playerAttributes.contains(AttributeName.GOURMAND)) {
-      attributes.get(AttributeName.GOURMAND).checkCondition(e);
+      attributes.get(AttributeName.GOURMAND).checkCondition(player, e);
     }
   }
 
@@ -82,9 +87,59 @@ public class CommonAttributeListener implements Listener {
       ((GenericDiet) attributes.get(diet)).checkFood(player, new ItemStack(Material.CAKE));;
 
       //Gourmand Condition
-      if (playerAttributes.contains(AttributeName.GOURMAND)) {
-        attributes.get(AttributeName.GOURMAND).checkCondition(e);
-      }
+      if (playerAttributes.contains(AttributeName.GOURMAND))
+        attributes.get(AttributeName.GOURMAND).checkCondition(player, e);
     }
+  }
+
+  @EventHandler
+  private void onHeal(final EntityRegainHealthEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+
+      //Hemophilia Effect
+      if (curse == AttributeName.HEMOPHILIA)
+        attributes.get(curse).triggerEffect(player, e);
+    }
+  }
+
+  @EventHandler
+  private void onEffect(final EntityPotionEffectEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+
+      //Cannibal Effect
+      if (diet == AttributeName.CANNIBAL)
+        attributes.get(diet).triggerEffect(player, e);
+
+      //Voidtouched & Starvation Effect
+      if (curse == AttributeName.VOIDTOUCHED || curse == AttributeName.STARVATION)
+        attributes.get(curse).triggerEffect(player, e);
+    }
+  }
+
+  @EventHandler
+  private void onDamage(final EntityDamageByEntityEvent e) {
+    if (e.getDamager() instanceof Player) {
+      Player player = (Player) e.getDamager();
+      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+
+      //Pacifist Effect
+      if (curse == AttributeName.PACIFIST)
+        attributes.get(curse).triggerEffect(player, e);
+    }
+  }
+
+  @EventHandler
+  private void onMove(final PlayerMoveEvent e) {
+    Player player = e.getPlayer();
+    AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+
+    //Dead Weight Effect
+    if (curse == AttributeName.DEAD_WEIGHT)
+      attributes.get(curse).triggerEffect(player, e);
   }
 }

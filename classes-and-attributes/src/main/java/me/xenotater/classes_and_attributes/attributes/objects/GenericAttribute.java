@@ -34,11 +34,11 @@ public abstract class GenericAttribute extends Object {
     return Plugin.plugin.attributes.get(curse).addForPlayer(p);
   }
 
-  public void triggerEffect(Event e) {
+  public void triggerEffect(Player p, Event e) {
     throw new UnsupportedOperationException("Non-Generic Attributes should override this method.");
   }
 
-  public void checkCondition(Event e) {
+  public void checkCondition(Player p, Event e) {
     throw new UnsupportedOperationException("Non-Generic Attributes should override this method.");
   }
 }

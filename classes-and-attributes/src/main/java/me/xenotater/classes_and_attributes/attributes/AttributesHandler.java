@@ -119,7 +119,7 @@ public class AttributesHandler implements CommandExecutor {
           sender.sendMessage(ChatColor.RED + "Invalid diet.");
           return true;
         }
-        boolean success = ((GenericDiet) Plugin.plugin.attributes.get(attribute)).addForPlayer(target);
+        boolean success = Plugin.plugin.attributes.get(attribute).addForPlayer(target);
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s diet was updated." : ChatColor.RED + "An error occurred while updating the target's diet.");
       }
       return true;
@@ -150,7 +150,11 @@ public class AttributesHandler implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Invalid curse.");
             return true;
           }
-          success = ((GenericCurse) Plugin.plugin.attributes.get(attribute)).addForPlayer(target);
+          AttributeName currentCurse = Plugin.plugin.dataManager.getCurse(target.getUniqueId());
+          if (currentCurse != null)
+            success = Plugin.plugin.attributes.get(currentCurse).removeForPlayer(target) && Plugin.plugin.attributes.get(attribute).addForPlayer(target);
+          else
+            success = Plugin.plugin.attributes.get(attribute).addForPlayer(target);
         }
         sender.sendMessage(success ? ChatColor.GREEN + target.getDisplayName() + "'s curse was updated." : ChatColor.RED + "An error occurred while updating the target's curse.");
       }

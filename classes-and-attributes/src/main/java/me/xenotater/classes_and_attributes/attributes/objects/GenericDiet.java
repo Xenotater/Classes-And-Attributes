@@ -23,7 +23,7 @@ public abstract class GenericDiet extends GenericAttribute {
 
   @Override
   public boolean addForPlayer(Player p) {
-    boolean success = Plugin.plugin.dataManager.setCurse(p.getUniqueId(), name);
+    boolean success = Plugin.plugin.dataManager.changeDiet(p.getUniqueId(), name);
     if (success) {
       p.sendMessage(ChatColor.YELLOW + " > " + ChatColor.WHITE + "Your diet was changed to: " + ChatColor.YELLOW + name + ChatColor.WHITE + ".");
       startCooldown(p);

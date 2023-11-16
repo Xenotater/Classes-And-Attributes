@@ -63,8 +63,6 @@ public class AttributeInfo extends ItemIcon {
         return Material.TINTED_GLASS;
       case THERMOPHOBIA:
         return Material.FLINT_AND_STEEL;
-      case CLUMSY:
-        return Material.EGG;
       case DEAD_WEIGHT:
         return Material.IRON_BLOCK;
       case HEMOPHILIA:
@@ -228,11 +226,6 @@ public class AttributeInfo extends ItemIcon {
         addLore(ChatColor.WHITE + "You cannot use Furnaces, Campfires,");
         addLore(ChatColor.WHITE + "Flint and Steel, or Fire Charges.");
         addLore(ChatColor.RED + "Negative Attribute");
-        break;
-      case CLUMSY:
-        addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"Not again!\"");
-        addLore(ChatColor.WHITE + "You cannot jump unless you are sneaking.");
-        addLore(ChatColor.DARK_PURPLE + "Curse Attribute");
         break;
       case DEAD_WEIGHT:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"No further... I can't...\"");

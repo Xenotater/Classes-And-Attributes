@@ -32,7 +32,6 @@ public enum AttributeName {
   MOTION_WEAKNESS("Motion Sensitivity", AttributeType.NEGATIVE),
   SUNLIGHT_WEAKNESS("Sunlight Sensitivity", AttributeType.NEGATIVE),
   THERMOPHOBIA("Thermophobia", AttributeType.NEGATIVE),
-  CLUMSY("Clumsy", AttributeType.CURSE),
   DEAD_WEIGHT("Dead Weight", AttributeType.CURSE),
   HEMOPHILIA("Hemophilia", AttributeType.CURSE),
   PACIFIST("Pacifist", AttributeType.CURSE),
@@ -68,7 +67,7 @@ public enum AttributeName {
   }
 
   public static List<AttributeName> dietAttributes = Arrays.asList(new AttributeName[]{CANNIBAL, CARNIVORE, EARTHY, FORAGER, PESCITARIAN, PICKY, SWEET_TOOTH, VEGETARIAN});
-  public static List<AttributeName> curseAttributes = Arrays.asList(new AttributeName[]{CLUMSY, DEAD_WEIGHT, HEMOPHILIA, PACIFIST, STARVATION, VOIDTOUCHED});
+  public static List<AttributeName> curseAttributes = Arrays.asList(new AttributeName[]{DEAD_WEIGHT, HEMOPHILIA, PACIFIST, STARVATION, VOIDTOUCHED});
   public static List<AttributeName> regularAttributes = ListUtils.subtract(ListUtils.subtract(Arrays.asList(values()), dietAttributes), curseAttributes);
   
   public static AttributeName getRandom() {

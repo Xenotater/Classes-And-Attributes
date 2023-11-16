@@ -18,27 +18,26 @@ public class Gourmand extends GenericAttribute {
     type = attribute.getType();
   }
 
-  public void checkCondition(Event e) {
+  @Override
+  public void checkCondition(Player p, Event e) {
     if (e instanceof PlayerItemConsumeEvent) {
       PlayerItemConsumeEvent event = (PlayerItemConsumeEvent) e;
-      Player player = event.getPlayer();
       ItemStack item = event.getItem();
-      AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+      AttributeName diet = Plugin.plugin.dataManager.getDiet(p.getUniqueId());
 
       if (item.getType().isEdible()) {
-        if (!((GenericDiet) Plugin.plugin.attributes.get(diet)).isValidFood(player, item))
-          breakForPlayer(player);
+        if (!((GenericDiet) Plugin.plugin.attributes.get(diet)).isValidFood(p, item))
+          breakForPlayer(p);
       }
     }
     else if (e instanceof PlayerInteractEvent) {
       PlayerInteractEvent event = (PlayerInteractEvent) e;
-      Player player = event.getPlayer();
       Block block = event.getClickedBlock();
-      AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+      AttributeName diet = Plugin.plugin.dataManager.getDiet(p.getUniqueId());
 
       if (block != null && block.getType() == Material.CAKE) {
-        if (!((GenericDiet) Plugin.plugin.attributes.get(diet)).isValidFood(player, new ItemStack(Material.CAKE)))
-          breakForPlayer(player);
+        if (!((GenericDiet) Plugin.plugin.attributes.get(diet)).isValidFood(p, new ItemStack(Material.CAKE)))
+          breakForPlayer(p);
       }
     }
   }
