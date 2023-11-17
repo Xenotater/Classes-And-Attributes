@@ -135,7 +135,7 @@ public class AttributeInfo extends ItemIcon {
         addLore(ChatColor.WHITE + "You gain Jump Boost 2 when you follow this diet.");
         addLore(ChatColor.YELLOW + "Diet Attribute");
         break;
-        case CHEMICAL_INTEREST:
+      case CHEMICAL_INTEREST:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"Potion Seller...\"");
         addLore(ChatColor.WHITE + "When you gain an effect from a Potion, it lasts twice as long.");
         addLore(ChatColor.GREEN + "Positive Attribute");
@@ -144,7 +144,7 @@ public class AttributeInfo extends ItemIcon {
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"You'd be shocked at what you can do");
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "with just duct tape and a welding torch.\"");
         addLore(ChatColor.WHITE + "Repairing an item using an Anvil does not damage the");
-        addLore(ChatColor.WHITE + "Anvil or increase the item's repair price.");
+        addLore(ChatColor.WHITE + "Anvil and won't cost more than 10 levels.");
         addLore(ChatColor.GREEN + "Positive Attribute");
         break;
       case NETHER_FRIEND:

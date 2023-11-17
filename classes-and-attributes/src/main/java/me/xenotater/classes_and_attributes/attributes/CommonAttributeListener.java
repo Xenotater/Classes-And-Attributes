@@ -8,11 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -110,6 +115,11 @@ public class CommonAttributeListener implements Listener {
       Player player = (Player) e.getEntity();
       AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
       AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+
+      //Chemical Interest
+      if (playerAttributes.contains(AttributeName.CHEMICAL_INTEREST))
+        attributes.get(AttributeName.CHEMICAL_INTEREST).triggerEffect(player, e);
 
       //Cannibal Effect
       if (diet == AttributeName.CANNIBAL)
@@ -141,5 +151,25 @@ public class CommonAttributeListener implements Listener {
     //Dead Weight Effect
     if (curse == AttributeName.DEAD_WEIGHT)
       attributes.get(curse).triggerEffect(player, e);
+  }
+
+  @EventHandler
+  private void onAnvil(final PrepareAnvilEvent e) {
+    Player player = (Player) e.getInventory().getViewers().get(0);
+    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+
+    //Expert Smith Effect
+    if (playerAttributes.contains(AttributeName.EXPERT_SMITH))
+      attributes.get(AttributeName.EXPERT_SMITH).triggerEffect(player, e);
+  }
+
+  @EventHandler
+  private void onInventory(final InventoryClickEvent e) {
+    Player player = (Player) e.getViewers().get(0);
+    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+
+    //Expert Smith Effect
+    if (playerAttributes.contains(AttributeName.EXPERT_SMITH))
+      attributes.get(AttributeName.EXPERT_SMITH).triggerEffect(player, e);
   }
 }
