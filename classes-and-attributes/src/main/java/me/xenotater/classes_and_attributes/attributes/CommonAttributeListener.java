@@ -8,21 +8,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
@@ -165,11 +162,23 @@ public class CommonAttributeListener implements Listener {
 
   @EventHandler
   private void onInventory(final InventoryClickEvent e) {
-    Player player = (Player) e.getViewers().get(0);
+    Player player = (Player) e.getWhoClicked();
     List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
 
     //Expert Smith Effect
     if (playerAttributes.contains(AttributeName.EXPERT_SMITH))
       attributes.get(AttributeName.EXPERT_SMITH).triggerEffect(player, e);
+  }
+
+  @EventHandler
+  private void onTarget(final EntityTargetEvent e) {
+    if (e.getTarget() instanceof Player) {
+      Player player = (Player) e.getTarget();
+      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+
+      //Friend of the Nether Effect
+      if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
+        attributes.get(AttributeName.NETHER_FRIEND).triggerEffect(player, e);
+    }
   }
 }

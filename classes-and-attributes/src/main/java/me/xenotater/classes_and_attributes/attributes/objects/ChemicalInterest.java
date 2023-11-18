@@ -6,7 +6,6 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent.Cause;
 import org.bukkit.potion.PotionEffect;
 
-import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 
 public class ChemicalInterest extends GenericAttribute {

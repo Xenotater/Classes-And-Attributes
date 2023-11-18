@@ -5,8 +5,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Enemy;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
 import org.bukkit.event.Event;
@@ -70,17 +70,17 @@ public class Shaman extends GenericClass {
     Bukkit.getScheduler().runTaskLater(Plugin.plugin, spiritDespawner, 400);
   }
 
-  private Monster getNearbyThreat(Player p) {
+  private Enemy getNearbyThreat(Player p) {
     List<Entity> nearbyMobs = p.getNearbyEntities(10, 10, 10);
     Location playerLoc = p.getLocation();
-    Monster nearest = null;
+    Enemy nearest = null;
     double dist = -1;
 
     for (Entity e : nearbyMobs) {
-      if (e instanceof Monster && (e.getCustomName() == null || !e.getCustomName().equals(ChatColor.DARK_GREEN + "Guardian Spirit"))) {
+      if (e instanceof Enemy && (e.getCustomName() == null || !e.getCustomName().equals(ChatColor.DARK_GREEN + "Guardian Spirit"))) {
         double newDist = playerLoc.distance(e.getLocation());
         if (dist == -1 || newDist < dist) {
-          nearest = (Monster) e;
+          nearest = (Enemy) e;
           dist = newDist;
         }
       }

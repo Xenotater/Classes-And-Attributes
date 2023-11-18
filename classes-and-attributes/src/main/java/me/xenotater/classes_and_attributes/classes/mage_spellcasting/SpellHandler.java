@@ -10,12 +10,14 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boss;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Enemy;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Wolf;
@@ -32,7 +34,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class SpellHandler {
   public void castSpell(Player p, String name) {
     List<Entity> multiTargets;
-    Entity singleTarget;
+    Entity  singleTarget;
     switch (name) {
       case "Bless": 
         multiTargets = getAllNearby(p, Player.class, 20);
@@ -59,39 +61,49 @@ public class SpellHandler {
         affectEntity(p, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 300, 1));
         break;
       case "Banish":
-        singleTarget = getRandomNearby(p, Monster.class, 20);
-        if (singleTarget != null)
+        singleTarget = getRandomNearby(p, Enemy.class, 20);
+        if (singleTarget != null) {
+          boolean found = false;
+          while (!found) {
+            if (singleTarget == null)
+              return;
+            if (!(singleTarget instanceof Boss))
+              found = true;
+            else
+              singleTarget = getRandomNearby(p, Enemy.class, 20);
+          }
           singleTarget.remove();
+        }
         break;
       case "Charm":
-        singleTarget = getRandomNearby(p, Monster.class, 20);
+        singleTarget = getRandomNearby(p, Enemy.class, 20);
         if (singleTarget != null) {
+          Mob enemy = (Mob) singleTarget;
           Runnable targeter = new Runnable() {
             public void run() {
-              Monster monster = (Monster) singleTarget;
-              if (!(monster.getTarget() instanceof Monster))
-                monster.setTarget((Monster) getRandomNearby(p, Monster.class, 20));
+              if (!(enemy.getTarget() instanceof Enemy))
+                enemy.setTarget((Mob) getRandomNearby(p, Mob.class, 20));
             }
           };
           scheduleRepeating(targeter, 0, 300);
         }
         break;
       case "Confusion":
-          multiTargets = getAllNearby(p, Monster.class, 20);
+          multiTargets = getAllNearby(p, Enemy.class, 20);
           if (!multiTargets.isEmpty()) {
             for (Entity target : multiTargets) {
-              affectEntity((Monster) target, new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
-              ((Monster) target).setTarget(null);
+              affectEntity((Mob) target, new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
+              ((Mob) target).setTarget(null);
             }
           }
         break;
       case "Suspend":
-        multiTargets = getAllNearby(p, Monster.class, 20);
+        multiTargets = getAllNearby(p, Enemy.class, 20);
         if (!multiTargets.isEmpty())
           affectEntities(multiTargets, new PotionEffect(PotionEffectType.LEVITATION, 100, 0));
         break;
       case "Enflame":
-        multiTargets = getAllNearby(p, Monster.class, 20);
+        multiTargets = getAllNearby(p, Enemy.class, 20);
         for (Entity target : multiTargets) {
           ((Damageable) target).setFireTicks(200);
         }
@@ -159,14 +171,14 @@ public class SpellHandler {
           wolf.setOwner(p);
           wolf.setCollarColor(DyeColor.PURPLE);
           wolf.setAngry(true);
-          wolf.setTarget((Monster) getRandomNearby(p, Monster.class, 20));
+          wolf.setTarget((Enemy) getRandomNearby(p, Enemy.class, 20));
           wolf.setCustomName(ChatColor.LIGHT_PURPLE + "Magic Companion");
           wolf.setCustomNameVisible(true);
           wolf.setRemoveWhenFarAway(true);
           Runnable reTarget = new Runnable() {
             public void run() {
               if (wolf.getTarget() == null)
-                wolf.setTarget((Monster) getRandomNearby(p, Monster.class, 20));
+                wolf.setTarget((Enemy) getRandomNearby(p, Enemy.class, 20));
             }
           };
           scheduleRepeating(reTarget, 20, 300);
