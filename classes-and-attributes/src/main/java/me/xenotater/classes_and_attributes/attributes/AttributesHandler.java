@@ -9,8 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.xenotater.classes_and_attributes.Plugin;
-import me.xenotater.classes_and_attributes.attributes.objects.GenericCurse;
-import me.xenotater.classes_and_attributes.attributes.objects.GenericDiet;
 import net.md_5.bungee.api.ChatColor;
 
 public class AttributesHandler implements CommandExecutor {

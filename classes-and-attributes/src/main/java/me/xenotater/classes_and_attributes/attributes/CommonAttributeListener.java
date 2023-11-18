@@ -133,10 +133,15 @@ public class CommonAttributeListener implements Listener {
     if (e.getDamager() instanceof Player) {
       Player player = (Player) e.getDamager();
       AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
 
       //Pacifist Effect
       if (curse == AttributeName.PACIFIST)
         attributes.get(curse).triggerEffect(player, e);
+
+      //Friend of the Nether Effect
+      if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
+        attributes.get(AttributeName.NETHER_FRIEND).triggerEffect(player, e);
     }
   }
 
