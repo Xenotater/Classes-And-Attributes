@@ -177,7 +177,8 @@ public class AttributeInfo extends ItemIcon {
         break;
       case WRATHFUL:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"You're not getting away that easily.\"");
-        addLore(ChatColor.WHITE + "You are considered to have Thorns 2.");
+        addLore(ChatColor.WHITE + "You are considered to have Thorns 2 at all times.");
+        addLore(ChatColor.WHITE + "This stacks with the actual Thorns Enchantment.");
         addLore(ChatColor.GREEN + "Positive Attribute");
         break;
       case ADDICTIVE:

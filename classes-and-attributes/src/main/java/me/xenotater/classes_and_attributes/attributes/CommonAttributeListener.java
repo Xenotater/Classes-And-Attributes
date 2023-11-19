@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -126,9 +124,13 @@ public class CommonAttributeListener implements Listener {
       AttributeName curse = getCurse(player);
       List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
-      //Chemical Interest
+      //Chemical Interest Effect
       if (playerAttributes.contains(AttributeName.CHEMICAL_INTEREST))
         triggerEffect(AttributeName.CHEMICAL_INTEREST, player, e);
+
+      //Addictive Personality Effect
+      if (playerAttributes.contains(AttributeName.ADDICTIVE))
+        triggerEffect(AttributeName.ADDICTIVE, player, e);
 
       //Cannibal Effect
       if (diet == AttributeName.CANNIBAL)
@@ -155,6 +157,14 @@ public class CommonAttributeListener implements Listener {
       if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
         triggerEffect(AttributeName.NETHER_FRIEND, player, e);
     }
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+      //Wrathful Effect
+      if (playerAttributes.contains(AttributeName.WRATHFUL))
+        triggerEffect(AttributeName.WRATHFUL, player, e);
+    }
   }
 
   @EventHandler
@@ -172,7 +182,12 @@ public class CommonAttributeListener implements Listener {
   @EventHandler
   private void onMove(final PlayerMoveEvent e) {
     Player player = e.getPlayer();
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
     AttributeName curse = getCurse(player);
+
+    //Aquaphobia Attribute
+    if (playerAttributes.contains(AttributeName.AQUAPHOBIA))
+      triggerEffect(AttributeName.AQUAPHOBIA, player, e);
 
     //Dead Weight Effect
     if (curse == AttributeName.DEAD_WEIGHT)
@@ -229,10 +244,18 @@ public class CommonAttributeListener implements Listener {
 
   @EventHandler
   private void onPlace(final BlockPlaceEvent e) {
+    //Add data for non-natural block placements
     Block block = e.getBlock();
     PersistentDataContainer placedData = new CustomBlockData(block, Plugin.plugin);
     NamespacedKey key = new NamespacedKey(Plugin.plugin, "placed_by_player");
     placedData.set(key, PersistentDataType.BOOLEAN, true);
+
+    Player player = e.getPlayer();
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+    //Bad Taste Effect
+    if (playerAttributes.contains(AttributeName.BAD_TASTE))
+      triggerEffect(AttributeName.BAD_TASTE, player, e);
   }
 
   @EventHandler

@@ -19,7 +19,7 @@ public class Gourmand extends GenericAttribute {
   }
 
   @Override
-  public void checkCondition(Player p, Event e) {
+  public void triggerEffect(Player p, Event e) {
     if (e instanceof PlayerItemConsumeEvent) {
       PlayerItemConsumeEvent event = (PlayerItemConsumeEvent) e;
       ItemStack item = event.getItem();

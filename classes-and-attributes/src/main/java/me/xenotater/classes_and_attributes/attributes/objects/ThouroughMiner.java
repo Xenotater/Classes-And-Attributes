@@ -17,7 +17,6 @@ import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
-import net.md_5.bungee.api.ChatMessageType;
 
 public class ThouroughMiner extends GenericAttribute {
   public ThouroughMiner() {
@@ -38,7 +37,7 @@ public class ThouroughMiner extends GenericAttribute {
       if (isUnnatural == null && event.isDropItems()) {
         Integer rand = new Random().nextInt(2);
         if (rand == 1) {
-          sendPlayerMessage(p, ChatMessageType.ACTION_BAR, ChatColor.GREEN + "Double Drops!");
+          sendActionBarMessage(p, ChatColor.GREEN + "Double Drops!");
           for (ItemStack drop : drops) {
             p.getWorld().dropItemNaturally(loc, drop.clone());
           }

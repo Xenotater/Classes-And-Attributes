@@ -108,4 +108,13 @@ public class DataManager {
   public AttributeName getCurse(UUID id) {
     return AttributeName.getValue(fileConfig.getString(id + ".curse"));
   }
+
+  public boolean addFailure(UUID id) {
+    fileConfig.set(id + ".failures", getFailures(id) + 1);
+    return save();
+  }
+
+  public Integer getFailures(UUID id) {
+    return new Integer(fileConfig.getString(id + ".failures"));
+  }
 }

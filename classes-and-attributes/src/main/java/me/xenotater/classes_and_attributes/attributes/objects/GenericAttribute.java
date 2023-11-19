@@ -30,21 +30,22 @@ public abstract class GenericAttribute extends Object {
 
   public boolean breakForPlayer(Player p) {
     p.sendMessage(ChatColor.RED + "You broke a condition for the " + name + " attribute!");
+    Plugin.plugin.dataManager.addFailure(p.getUniqueId());
+    return cursePlayer(p);
+  }
+
+  public boolean cursePlayer(Player p) {
     AttributeName curse = Plugin.plugin.dataManager.getCurse(p.getUniqueId());
     if (curse == null)
       curse = AttributeName.getRandomCurse();
     return Plugin.plugin.attributes.get(curse).addForPlayer(p);
   }
 
-  public void sendPlayerMessage(Player p, ChatMessageType type, String message) {
-    p.spigot().sendMessage(type, TextComponent.fromLegacyText(message));
+  public void sendActionBarMessage(Player p, String message) {
+    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
   }
 
   public void triggerEffect(Player p, Event e) {
-    throw new UnsupportedOperationException("Non-Generic Attributes should override this method.");
-  }
-
-  public void checkCondition(Player p, Event e) {
     throw new UnsupportedOperationException("Non-Generic Attributes should override this method.");
   }
 }

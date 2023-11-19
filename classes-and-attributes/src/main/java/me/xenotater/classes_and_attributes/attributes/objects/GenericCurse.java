@@ -19,6 +19,10 @@ public abstract class GenericCurse extends GenericAttribute {
     return success;
   }
 
+  public void restartTimer(Player p) {
+    startTimer(p);
+  }
+
   @Override
   public boolean removeForPlayer(Player p) {
     boolean success = Plugin.plugin.dataManager.setCurse(p.getUniqueId(), "None");
