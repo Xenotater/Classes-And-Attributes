@@ -6,13 +6,21 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -21,7 +29,11 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
+
+import com.jeff_media.customblockdata.CustomBlockData;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.objects.GenericAttribute;
@@ -38,7 +50,7 @@ public class CommonAttributeListener implements Listener {
   @EventHandler
   private void onLogin(final PlayerLoginEvent e) {
     Player player = e.getPlayer();
-    AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+    AttributeName diet = getDiet(player);
     if (diet == null) {
       Runnable dietAssigner = new Runnable() {
         @Override
@@ -49,7 +61,7 @@ public class CommonAttributeListener implements Listener {
       Bukkit.getScheduler().runTaskLater(Plugin.plugin, dietAssigner, 5);
     }
 
-    AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+    AttributeName curse = getCurse(player);
     if (curse != null) {
       ((GenericCurse) attributes.get(curse)).startTimer(player);
     }
@@ -59,8 +71,8 @@ public class CommonAttributeListener implements Listener {
   private void onEat(final PlayerItemConsumeEvent e) {
     Player player = e.getPlayer();
     ItemStack item = e.getItem();
-    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
-    AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
+    AttributeName diet = getDiet(player);
 
     if (item.getType().isEdible())
       ((GenericDiet) attributes.get(diet)).checkFood(player, item);
@@ -74,7 +86,7 @@ public class CommonAttributeListener implements Listener {
 
     //Gourmand Condition
     if (playerAttributes.contains(AttributeName.GOURMAND)) {
-      attributes.get(AttributeName.GOURMAND).checkCondition(player, e);
+        triggerEffect(AttributeName.GOURMAND, player, e);
     }
   }
 
@@ -82,15 +94,15 @@ public class CommonAttributeListener implements Listener {
   private void onInteract(final PlayerInteractEvent e) {
     Player player = e.getPlayer();
     Block block = e.getClickedBlock();
-    AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
-    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+    AttributeName diet = getDiet(player);
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
     
     if (block != null && block.getType() == Material.CAKE) {
       ((GenericDiet) attributes.get(diet)).checkFood(player, new ItemStack(Material.CAKE));;
 
       //Gourmand Condition
       if (playerAttributes.contains(AttributeName.GOURMAND))
-        attributes.get(AttributeName.GOURMAND).checkCondition(player, e);
+        triggerEffect(AttributeName.GOURMAND, player, e);
     }
   }
 
@@ -98,11 +110,11 @@ public class CommonAttributeListener implements Listener {
   private void onHeal(final EntityRegainHealthEvent e) {
     if (e.getEntity() instanceof Player) {
       Player player = (Player) e.getEntity();
-      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+      AttributeName curse = getCurse(player);
 
       //Hemophilia Effect
       if (curse == AttributeName.HEMOPHILIA)
-        attributes.get(curse).triggerEffect(player, e);
+        triggerEffect(curse, player, e);
     }
   }
 
@@ -110,80 +122,142 @@ public class CommonAttributeListener implements Listener {
   private void onEffect(final EntityPotionEffectEvent e) {
     if (e.getEntity() instanceof Player) {
       Player player = (Player) e.getEntity();
-      AttributeName diet = Plugin.plugin.dataManager.getDiet(player.getUniqueId());
-      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
-      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+      AttributeName diet = getDiet(player);
+      AttributeName curse = getCurse(player);
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
       //Chemical Interest
       if (playerAttributes.contains(AttributeName.CHEMICAL_INTEREST))
-        attributes.get(AttributeName.CHEMICAL_INTEREST).triggerEffect(player, e);
+        triggerEffect(AttributeName.CHEMICAL_INTEREST, player, e);
 
       //Cannibal Effect
       if (diet == AttributeName.CANNIBAL)
-        attributes.get(diet).triggerEffect(player, e);
+        triggerEffect(diet, player, e);
 
       //Voidtouched & Starvation Effect
       if (curse == AttributeName.VOIDTOUCHED || curse == AttributeName.STARVATION)
-        attributes.get(curse).triggerEffect(player, e);
+        triggerEffect(curse, player, e);
     }
   }
 
   @EventHandler
-  private void onDamage(final EntityDamageByEntityEvent e) {
+  private void onDamageByEntity(final EntityDamageByEntityEvent e) {
     if (e.getDamager() instanceof Player) {
       Player player = (Player) e.getDamager();
-      AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
-      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+      AttributeName curse = getCurse(player);
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
       //Pacifist Effect
       if (curse == AttributeName.PACIFIST)
-        attributes.get(curse).triggerEffect(player, e);
+        triggerEffect(curse, player, e);
 
       //Friend of the Nether Effect
       if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
-        attributes.get(AttributeName.NETHER_FRIEND).triggerEffect(player, e);
+        triggerEffect(AttributeName.NETHER_FRIEND, player, e);
+    }
+  }
+
+  @EventHandler
+  private void onDamage(final EntityDamageEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+      //Tough Effect
+      if (playerAttributes.contains(AttributeName.TOUGH))
+        triggerEffect(AttributeName.TOUGH, player, e);
     }
   }
 
   @EventHandler
   private void onMove(final PlayerMoveEvent e) {
     Player player = e.getPlayer();
-    AttributeName curse = Plugin.plugin.dataManager.getCurse(player.getUniqueId());
+    AttributeName curse = getCurse(player);
 
     //Dead Weight Effect
     if (curse == AttributeName.DEAD_WEIGHT)
-      attributes.get(curse).triggerEffect(player, e);
+        triggerEffect(curse, player, e);
   }
 
   @EventHandler
   private void onAnvil(final PrepareAnvilEvent e) {
     Player player = (Player) e.getInventory().getViewers().get(0);
-    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
     //Expert Smith Effect
     if (playerAttributes.contains(AttributeName.EXPERT_SMITH))
-      attributes.get(AttributeName.EXPERT_SMITH).triggerEffect(player, e);
+        triggerEffect(AttributeName.EXPERT_SMITH, player, e);
   }
 
   @EventHandler
   private void onInventory(final InventoryClickEvent e) {
     Player player = (Player) e.getWhoClicked();
-    List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
     //Expert Smith Effect
     if (playerAttributes.contains(AttributeName.EXPERT_SMITH))
-      attributes.get(AttributeName.EXPERT_SMITH).triggerEffect(player, e);
+        triggerEffect(AttributeName.EXPERT_SMITH, player, e);
   }
 
   @EventHandler
   private void onTarget(final EntityTargetEvent e) {
     if (e.getTarget() instanceof Player) {
       Player player = (Player) e.getTarget();
-      List<AttributeName> playerAttributes = Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
       //Friend of the Nether Effect
       if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
-        attributes.get(AttributeName.NETHER_FRIEND).triggerEffect(player, e);
+        triggerEffect(AttributeName.NETHER_FRIEND, player, e);
+
+      //Well Rested Effect
+      if (playerAttributes.contains(AttributeName.WELL_RESTED))
+        triggerEffect(AttributeName.WELL_RESTED, player, e);
     }
+  }
+
+  @EventHandler
+  private void onDeath(final EntityDeathEvent e) {
+    if (e.getEntity().getKiller() != null) {
+      Player player = e.getEntity().getKiller();
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+      //Scavenger Effect
+      if (playerAttributes.contains(AttributeName.SCAVENGER))
+        triggerEffect(AttributeName.SCAVENGER, player, e);
+    }
+  }
+
+  @EventHandler
+  private void onPlace(final BlockPlaceEvent e) {
+    Block block = e.getBlock();
+    PersistentDataContainer placedData = new CustomBlockData(block, Plugin.plugin);
+    NamespacedKey key = new NamespacedKey(Plugin.plugin, "placed_by_player");
+    placedData.set(key, PersistentDataType.BOOLEAN, true);
+  }
+
+  @EventHandler
+  private void onBreak(final BlockBreakEvent e) {
+    Player player = e.getPlayer();
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+    //Thourough Miner Effect
+    if (playerAttributes.contains(AttributeName.THOUROUGH_MINER))
+      triggerEffect(AttributeName.THOUROUGH_MINER, player, e);
+  }
+
+  private void triggerEffect(AttributeName attribute, Player player, Event event) {
+    attributes.get(attribute).triggerEffect(player, event);
+  }
+
+  private List<AttributeName> getPlayerAttributes(Player player) {
+    return Plugin.plugin.dataManager.getAttibutes(player.getUniqueId());
+  }
+
+  private AttributeName getDiet(Player player) {
+    return Plugin.plugin.dataManager.getDiet(player.getUniqueId());
+  }
+
+  private AttributeName getCurse(Player player) {
+    return Plugin.plugin.dataManager.getCurse(player.getUniqueId());
   }
 }

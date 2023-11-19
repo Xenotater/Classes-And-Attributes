@@ -7,6 +7,8 @@ import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 import me.xenotater.classes_and_attributes.attributes.AttributeType;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class GenericAttribute extends Object {
   protected String name;
@@ -32,6 +34,10 @@ public abstract class GenericAttribute extends Object {
     if (curse == null)
       curse = AttributeName.getRandomCurse();
     return Plugin.plugin.attributes.get(curse).addForPlayer(p);
+  }
+
+  public void sendPlayerMessage(Player p, ChatMessageType type, String message) {
+    p.spigot().sendMessage(type, TextComponent.fromLegacyText(message));
   }
 
   public void triggerEffect(Player p, Event e) {
