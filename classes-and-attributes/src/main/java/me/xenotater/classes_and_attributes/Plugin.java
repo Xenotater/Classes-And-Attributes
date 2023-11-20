@@ -2,7 +2,6 @@ package me.xenotater.classes_and_attributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.UUID;
@@ -22,6 +21,7 @@ import me.xenotater.classes_and_attributes.attributes.AttributeName;
 import me.xenotater.classes_and_attributes.attributes.AttributesCompleter;
 import me.xenotater.classes_and_attributes.attributes.AttributesHandler;
 import me.xenotater.classes_and_attributes.attributes.CommonAttributeListener;
+import me.xenotater.classes_and_attributes.attributes.objects.BronzeAge;
 import me.xenotater.classes_and_attributes.attributes.objects.GenericAttribute;
 import me.xenotater.classes_and_attributes.classes.ClassMenu;
 import me.xenotater.classes_and_attributes.classes.ClassName;
@@ -72,8 +72,9 @@ public class Plugin extends JavaPlugin
     initAttributes();
     LOGGER.info("Initializing events and listeners...");
     registerEvents();
+    LOGGER.info("Creating custom recipes...");
+    createRecipes();
     CustomBlockData.registerListener(plugin);
-    Mage.createBrewerRecipe();
     LOGGER.info("Classes & Attributes Enabled");
   }
 
@@ -134,5 +135,10 @@ public class Plugin extends JavaPlugin
       LOGGER.warning("Error loading Attributes: " + e);
       getServer().getPluginManager().disablePlugin(plugin);
     }
+  }
+
+  private void createRecipes() {
+    ((Mage) classes.get(ClassName.MAGE)).createBrewerRecipe();
+    ((BronzeAge) attributes.get(AttributeName.BRONZE_AGE)).createToolRecipes();
   }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -13,6 +14,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageAbortEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -51,7 +54,6 @@ public class CommonAttributeListener implements Listener {
     AttributeName diet = getDiet(player);
     if (diet == null) {
       Runnable dietAssigner = new Runnable() {
-        @Override
         public void run() {
           Plugin.plugin.dataManager.changeDiet(player.getUniqueId(), AttributeName.getRandomDiet().getName());
         }
@@ -156,6 +158,10 @@ public class CommonAttributeListener implements Listener {
       //Friend of the Nether Effect
       if (playerAttributes.contains(AttributeName.NETHER_FRIEND))
         triggerEffect(AttributeName.NETHER_FRIEND, player, e);
+
+      //Bronze Age Effect
+      if (playerAttributes.contains(AttributeName.BRONZE_AGE))
+        triggerEffect(AttributeName.BRONZE_AGE, player, e);
     }
     if (e.getEntity() instanceof Player) {
       Player player = (Player) e.getEntity();
@@ -266,6 +272,10 @@ public class CommonAttributeListener implements Listener {
     //Thourough Miner Effect
     if (playerAttributes.contains(AttributeName.THOUROUGH_MINER))
       triggerEffect(AttributeName.THOUROUGH_MINER, player, e);
+
+    //Bronze Age Effect
+    if (playerAttributes.contains(AttributeName.BRONZE_AGE))
+      triggerEffect(AttributeName.BRONZE_AGE, player, e);
   }
 
   private void triggerEffect(AttributeName attribute, Player player, Event event) {

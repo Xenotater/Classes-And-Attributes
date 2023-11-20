@@ -115,6 +115,10 @@ public class DataManager {
   }
 
   public Integer getFailures(UUID id) {
-    return new Integer(fileConfig.getString(id + ".failures"));
+    Integer numFailures = new Integer(0);
+    String failures = fileConfig.getString(id + ".failures");
+    if (failures != null)
+      numFailures = new Integer(failures);
+    return numFailures;
   }
 }

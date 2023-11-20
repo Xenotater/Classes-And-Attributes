@@ -1,6 +1,7 @@
 package me.xenotater.classes_and_attributes.classes.objects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -132,10 +133,11 @@ public class Mage extends GenericClass {
     }
   }
 
-  public static void createBrewerRecipe() {
+  public void createBrewerRecipe() {
     ItemStack stand = new ItemStack(Material.BREWING_STAND);
     ItemMeta meta = stand.getItemMeta();
     meta.setDisplayName(ChatColor.DARK_PURPLE + "Master Brewing Stand");
+    meta.setLore(Arrays.asList(new String[]{"" + ChatColor.GRAY + ChatColor.ITALIC + "For use by Mages"}));
     stand.setItemMeta(meta);
     NamespacedKey key = new NamespacedKey(Plugin.plugin, "master_brewing_stand");
     ShapedRecipe recipe = new ShapedRecipe(key, stand);
