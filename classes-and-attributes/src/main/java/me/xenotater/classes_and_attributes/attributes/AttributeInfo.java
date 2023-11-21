@@ -204,7 +204,8 @@ public class AttributeInfo extends ItemIcon {
         break;
       case COMPULSIVE_MINER:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"We're gonna be rich!\"");
-        addLore(ChatColor.WHITE + "You must mine any ores within 5 blocks of the last ore you mined.");
+        addLore(ChatColor.WHITE + "You must mine any ores within 3 blocks of the last ore you mined");
+        addLore(ChatColor.WHITE + "before moving on to a new location.");
         addLore(ChatColor.RED + "Negative Attribute");
         break;
       case GOURMAND:

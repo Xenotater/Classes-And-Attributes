@@ -2,19 +2,16 @@ package me.xenotater.classes_and_attributes.attributes.objects;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageAbortEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -26,11 +23,13 @@ import net.md_5.bungee.api.ChatColor;
 
 public class BronzeAge extends GenericAttribute {
   Map<UUID, Integer> digging = new HashMap<>();
+  List<String> tools;
 
   public BronzeAge() {
     AttributeName attribute = AttributeName.BRONZE_AGE;
     name = attribute.getName();
     type = attribute.getType();
+    tools = Arrays.asList(new String[]{"_pickaxe", "_axe", "_shovel", "_hoe"});
   }
 
   @Override
@@ -38,7 +37,8 @@ public class BronzeAge extends GenericAttribute {
     ItemStack tool = p.getInventory().getItemInMainHand();
     if (tool != null && tool.getType() != Material.AIR) {
       boolean isBronze = tool.getItemMeta().getDisplayName().contains(ChatColor.GOLD + "Bronze");
-      if ((e instanceof EntityDamageByEntityEvent || e instanceof BlockBreakEvent) && !isBronze)
+      boolean isTool = tools.stream().anyMatch(disallowed -> tool.getType().name().toLowerCase().contains(disallowed));
+      if ((e instanceof EntityDamageByEntityEvent || e instanceof BlockBreakEvent) && isTool && !isBronze)
         breakForPlayer(p);
     }
   }

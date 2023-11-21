@@ -1,8 +1,6 @@
 package me.xenotater.classes_and_attributes.attributes.objects;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -20,9 +18,7 @@ public class Aquaphobia extends GenericAttribute {
   @Override
   public void triggerEffect(Player p, Event e) {
     if (e instanceof PlayerMoveEvent) {
-      PlayerMoveEvent event = (PlayerMoveEvent) e;
-      Block block = event.getTo().getBlock();
-      if (block.getType() == Material.WATER) {
+      if (p.isInWater()) {
         GenericCurse curse = (GenericCurse) Plugin.plugin.attributes.get(Plugin.plugin.dataManager.getCurse(p.getUniqueId()));
         if (curse == null)
           breakForPlayer(p);

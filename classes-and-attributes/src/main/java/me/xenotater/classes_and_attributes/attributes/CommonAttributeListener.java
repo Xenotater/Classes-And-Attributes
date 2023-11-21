@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -14,8 +13,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageAbortEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -33,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import com.jeff_media.customblockdata.CustomBlockData;
 
@@ -95,15 +93,19 @@ public class CommonAttributeListener implements Listener {
     Player player = e.getPlayer();
     Block block = e.getClickedBlock();
     AttributeName diet = getDiet(player);
-      List<AttributeName> playerAttributes = getPlayerAttributes(player);
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
     
     if (block != null && block.getType() == Material.CAKE) {
-      ((GenericDiet) attributes.get(diet)).checkFood(player, new ItemStack(Material.CAKE));;
+      ((GenericDiet) attributes.get(diet)).checkFood(player, new ItemStack(Material.CAKE));
 
       //Gourmand Condition
       if (playerAttributes.contains(AttributeName.GOURMAND))
         triggerEffect(AttributeName.GOURMAND, player, e);
     }
+
+      //Thermophobia Condition
+      if (playerAttributes.contains(AttributeName.THERMOPHOBIA))
+        triggerEffect(AttributeName.THERMOPHOBIA, player, e);
   }
 
   @EventHandler
@@ -195,6 +197,18 @@ public class CommonAttributeListener implements Listener {
     if (playerAttributes.contains(AttributeName.AQUAPHOBIA))
       triggerEffect(AttributeName.AQUAPHOBIA, player, e);
 
+    //Compulsive Miner Effect
+    if (playerAttributes.contains(AttributeName.COMPULSIVE_MINER))
+      triggerEffect(AttributeName.COMPULSIVE_MINER, player, e);
+
+    //Motion Sensitivity Effect
+    if (playerAttributes.contains(AttributeName.MOTION_WEAKNESS))
+      triggerEffect(AttributeName.MOTION_WEAKNESS, player, e);
+
+    //Sunlight Sensitivity Effect
+    if (playerAttributes.contains(AttributeName.SUNLIGHT_WEAKNESS))
+      triggerEffect(AttributeName.SUNLIGHT_WEAKNESS, player, e);
+
     //Dead Weight Effect
     if (curse == AttributeName.DEAD_WEIGHT)
         triggerEffect(curse, player, e);
@@ -276,6 +290,22 @@ public class CommonAttributeListener implements Listener {
     //Bronze Age Effect
     if (playerAttributes.contains(AttributeName.BRONZE_AGE))
       triggerEffect(AttributeName.BRONZE_AGE, player, e);
+
+    //Compulsive Miner Effect
+    if (playerAttributes.contains(AttributeName.COMPULSIVE_MINER))
+      triggerEffect(AttributeName.COMPULSIVE_MINER, player, e);
+  }
+
+  @EventHandler
+  private void onMount(final EntityMountEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+    List<AttributeName> playerAttributes = getPlayerAttributes(player);
+
+    //Motion Sensitivity Effect
+    if (playerAttributes.contains(AttributeName.MOTION_WEAKNESS))
+      triggerEffect(AttributeName.MOTION_WEAKNESS, player, e);
+    }
   }
 
   private void triggerEffect(AttributeName attribute, Player player, Event event) {
