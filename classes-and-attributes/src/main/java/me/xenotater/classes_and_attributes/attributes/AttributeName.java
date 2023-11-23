@@ -36,7 +36,9 @@ public enum AttributeName {
   HEMOPHILIA("Hemophilia", AttributeType.CURSE),
   PACIFIST("Pacifist", AttributeType.CURSE),
   STARVATION("Starvation", AttributeType.CURSE),
-  VOIDTOUCHED("Voidtouched", AttributeType.CURSE);
+  VOIDTOUCHED("Voidtouched", AttributeType.CURSE),
+  DIZZY("Dizzy", AttributeType.CURSE),
+  HELLFIRE("Hellfire", AttributeType.CURSE);
   
   private final String name;
   private final AttributeType type;
@@ -67,7 +69,7 @@ public enum AttributeName {
   }
 
   public static List<AttributeName> dietAttributes = Arrays.asList(new AttributeName[]{CANNIBAL, CARNIVORE, EARTHY, FORAGER, PESCITARIAN, PICKY, SWEET_TOOTH, VEGETARIAN});
-  public static List<AttributeName> curseAttributes = Arrays.asList(new AttributeName[]{DEAD_WEIGHT, HEMOPHILIA, PACIFIST, STARVATION, VOIDTOUCHED});
+  public static List<AttributeName> curseAttributes = Arrays.asList(new AttributeName[]{DEAD_WEIGHT, HEMOPHILIA, PACIFIST, STARVATION, VOIDTOUCHED, DIZZY, HELLFIRE});
   public static List<AttributeName> regularAttributes = ListUtils.subtract(ListUtils.subtract(Arrays.asList(values()), dietAttributes), curseAttributes);
   
   public static AttributeName getRandom() {

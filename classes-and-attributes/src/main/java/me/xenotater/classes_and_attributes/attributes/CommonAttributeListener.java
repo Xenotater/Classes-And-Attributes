@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -60,9 +61,12 @@ public class CommonAttributeListener implements Listener {
     }
 
     AttributeName curse = getCurse(player);
-    if (curse != null) {
+    if (curse != null)
       ((GenericCurse) attributes.get(curse)).startTimer(player);
-    }
+    if (curse == AttributeName.HELLFIRE)
+      triggerEffect(curse, player, null);
+    else
+      Bukkit.getScheduler().runTaskLater(Plugin.plugin, new Runnable(){public void run() {player.setVisualFire(false);}}, 5);
   }
 
   @EventHandler
@@ -83,9 +87,8 @@ public class CommonAttributeListener implements Listener {
     }
 
     //Gourmand Condition
-    if (playerAttributes.contains(AttributeName.GOURMAND)) {
+    if (playerAttributes.contains(AttributeName.GOURMAND))
         triggerEffect(AttributeName.GOURMAND, player, e);
-    }
   }
 
   @EventHandler
@@ -211,7 +214,7 @@ public class CommonAttributeListener implements Listener {
 
     //Dead Weight Effect
     if (curse == AttributeName.DEAD_WEIGHT)
-        triggerEffect(curse, player, e);
+      triggerEffect(curse, player, e);
   }
 
   @EventHandler
@@ -300,11 +303,23 @@ public class CommonAttributeListener implements Listener {
   private void onMount(final EntityMountEvent e) {
     if (e.getEntity() instanceof Player) {
       Player player = (Player) e.getEntity();
-    List<AttributeName> playerAttributes = getPlayerAttributes(player);
+      List<AttributeName> playerAttributes = getPlayerAttributes(player);
 
-    //Motion Sensitivity Effect
-    if (playerAttributes.contains(AttributeName.MOTION_WEAKNESS))
-      triggerEffect(AttributeName.MOTION_WEAKNESS, player, e);
+      //Motion Sensitivity Effect
+      if (playerAttributes.contains(AttributeName.MOTION_WEAKNESS))
+        triggerEffect(AttributeName.MOTION_WEAKNESS, player, e);
+    }
+  }
+
+  @EventHandler
+  private void onGlide(final EntityToggleGlideEvent e) {
+    if (e.getEntity() instanceof Player) {
+      Player player = (Player) e.getEntity();
+      AttributeName curse = getCurse(player);
+
+      //Dead Weight Effect
+      if (curse == AttributeName.DEAD_WEIGHT)
+        triggerEffect(curse, player, e);
     }
   }
 

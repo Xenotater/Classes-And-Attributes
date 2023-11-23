@@ -12,6 +12,8 @@ import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 
 public class Starvation extends GenericCurse {
+  private PotionEffect curseEffect = new PotionEffect(PotionEffectType.HUNGER, 20 * 60, 2);
+
   public Starvation() {
     AttributeName attribute = AttributeName.STARVATION;
     name = attribute.getName();
@@ -36,17 +38,6 @@ public class Starvation extends GenericCurse {
 
   @Override
   public void triggerEffect(Player p, Event e) {
-    if (e == null) {
-      p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20 * 60, 1));
-    }
-    else if (e instanceof EntityPotionEffectEvent) {
-      EntityPotionEffectEvent event = (EntityPotionEffectEvent) e;
-      Action action = event.getAction();
-      
-      if (action != Action.ADDED) {
-        if (event.getOldEffect().getType().equals(PotionEffectType.HUNGER)) 
-          event.setCancelled(true);
-      }
-    }
+    handlePotionCurse(p, e, curseEffect);
   }
 }

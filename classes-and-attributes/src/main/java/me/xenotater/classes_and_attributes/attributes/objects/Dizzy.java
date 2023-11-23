@@ -11,11 +11,11 @@ import org.bukkit.potion.PotionEffectType;
 import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 
-public class Voidtouched extends GenericCurse {
-  private PotionEffect curseEffect = new PotionEffect(PotionEffectType.DARKNESS, 20 * 60, 0);
+public class Dizzy extends GenericCurse {
+  private PotionEffect curseEffect = new PotionEffect(PotionEffectType.CONFUSION, 20 * 60, 0);
 
-  public Voidtouched() {
-    AttributeName attribute = AttributeName.VOIDTOUCHED;
+  public Dizzy() {
+    AttributeName attribute = AttributeName.DIZZY;
     name = attribute.getName();
     type = attribute.getType();
   }
@@ -32,7 +32,7 @@ public class Voidtouched extends GenericCurse {
   public boolean removeForPlayer(Player p) {
     boolean success = super.removeForPlayer(p);
     if (success)
-      Bukkit.getScheduler().runTaskLater(Plugin.plugin, new Runnable() {public void run() {p.removePotionEffect(PotionEffectType.DARKNESS);}}, 1);
+      Bukkit.getScheduler().runTaskLater(Plugin.plugin, new Runnable() {public void run() {p.removePotionEffect(PotionEffectType.CONFUSION);}}, 1);
     return success;
   }
 

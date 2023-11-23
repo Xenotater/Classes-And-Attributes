@@ -17,7 +17,7 @@ public class Hemophilia extends GenericCurse {
   public void triggerEffect(Player p, Event e) {
     if (e instanceof EntityRegainHealthEvent) {
       EntityRegainHealthEvent event = (EntityRegainHealthEvent) e;
-      event.setAmount(event.getAmount() / 2);
+      event.setCancelled(true);
     }
   }
 }

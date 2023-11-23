@@ -30,9 +30,8 @@ public class Knight extends GenericClass {
       EntityPotionEffectEvent event = (EntityPotionEffectEvent) e;
       if (event.getNewEffect() != null) {
         PotionEffectType effect = event.getNewEffect().getType();
-        AttributeName curse = Plugin.plugin.dataManager.getCurse(p.getUniqueId());
         if (negativeEffects.contains(effect)) {
-          if ((effect.equals(PotionEffectType.HUNGER) && curse == AttributeName.STARVATION) || (effect.equals(PotionEffectType.DARKNESS) && curse == AttributeName.VOIDTOUCHED))
+          if (isCurseEffect(p, effect))
             return;
           event.setCancelled(true);
           notifyAbilityTriggered(p, "Hardy");
@@ -66,5 +65,12 @@ public class Knight extends GenericClass {
     negativeEffects.add(PotionEffectType.LEVITATION);
     negativeEffects.add(PotionEffectType.UNLUCK);
     negativeEffects.add(PotionEffectType.DARKNESS);
+  }
+
+  private boolean isCurseEffect(Player p, PotionEffectType effect) {
+    AttributeName curse = Plugin.plugin.dataManager.getCurse(p.getUniqueId());
+    return (effect.equals(PotionEffectType.HUNGER) && curse == AttributeName.STARVATION) ||
+    (effect.equals(PotionEffectType.DARKNESS) && curse == AttributeName.VOIDTOUCHED) ||
+    (effect.equals(PotionEffectType.CONFUSION) && curse == AttributeName.DIZZY);
   }
 }

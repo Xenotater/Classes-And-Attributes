@@ -4,6 +4,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent.Action;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import me.xenotater.classes_and_attributes.Plugin;
 import net.md_5.bungee.api.ChatColor;
@@ -32,6 +37,21 @@ public abstract class GenericCurse extends GenericAttribute {
       Plugin.plugin.curseTimers.put(p.getUniqueId(), null);
     }
     return success;
+  }
+
+  public void handlePotionCurse(Player p, Event e, PotionEffect effect) {
+    if (e == null) {
+      p.addPotionEffect(effect);
+    }
+    else if (e instanceof EntityPotionEffectEvent) {
+      EntityPotionEffectEvent event = (EntityPotionEffectEvent) e;
+      Action action = event.getAction();
+      
+      if (action != Action.ADDED) {
+        if (event.getOldEffect().getType().equals(effect.getType())) 
+          event.setCancelled(true);
+      }
+    }
   }
   
   public void startTimer(Player p) {

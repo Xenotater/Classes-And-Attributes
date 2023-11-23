@@ -73,6 +73,10 @@ public class AttributeInfo extends ItemIcon {
         return Material.POISONOUS_POTATO;
       case VOIDTOUCHED:
         return Material.ECHO_SHARD;
+      case DIZZY:
+        return Material.COMPASS;
+      case HELLFIRE:
+        return Material.SOUL_CAMPFIRE;
       default:
         return null;
     }
@@ -232,11 +236,12 @@ public class AttributeInfo extends ItemIcon {
       case DEAD_WEIGHT:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"No further... I can't...\"");
         addLore(ChatColor.WHITE + "You cannot swim in Water or Lava, instead sinking to the bottom.");
+        addLore(ChatColor.WHITE + "You also cannot fly using an Elytra.");
         addLore(ChatColor.RED + "Curse Attribute");
         break;
       case HEMOPHILIA:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"Guys... The bleeding isn't stopping!\"");
-        addLore(ChatColor.WHITE + "You heal 50% slower.");
+        addLore(ChatColor.WHITE + "You cannot heal.");
         addLore(ChatColor.RED + "Curse Attribute");
         break;
       case PACIFIST:
@@ -246,12 +251,23 @@ public class AttributeInfo extends ItemIcon {
         break;
       case STARVATION:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"So... Hungry...\"");
-        addLore(ChatColor.WHITE + "You gain Hunger I, even if you would normally be immune.");
+        addLore(ChatColor.WHITE + "You gain Hunger 3, even if you would normally be immune.");
         addLore(ChatColor.DARK_PURPLE + "Curse Attribute");
         break;
       case VOIDTOUCHED:
         addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"Where... Where is everyone?!\"");
         addLore(ChatColor.WHITE + "You gain Darkness I, even if you would normally be immune.");
+        addLore(ChatColor.DARK_PURPLE + "Curse Attribute");
+        break;
+      case DIZZY:
+        addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"I'm gonna be sick...\"");
+        addLore(ChatColor.WHITE + "You gain Nausea I, even if you would normally be immune.");
+        addLore(ChatColor.DARK_PURPLE + "Curse Attribute");
+        break;
+      case HELLFIRE:
+        addLore("" + ChatColor.GRAY + ChatColor.ITALIC + "\"Help, it won't go out!\"");
+        addLore(ChatColor.WHITE + "You are set ablaze. This cursed fire can't be put out");
+        addLore(ChatColor.WHITE + "with water and ignores fire resistance/immunity.");
         addLore(ChatColor.DARK_PURPLE + "Curse Attribute");
         break;
     }

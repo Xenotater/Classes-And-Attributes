@@ -4,10 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
-import me.xenotater.classes_and_attributes.Plugin;
 import me.xenotater.classes_and_attributes.attributes.AttributeName;
 
 public class DeadWeight extends GenericCurse {
@@ -28,6 +28,11 @@ public class DeadWeight extends GenericCurse {
         if (playerLoc.getY() > ground.getY() + 2.25)
           p.setVelocity(new Vector(velocity.getX(), -0.33, velocity.getZ()));
       }
+    }
+    else if (e instanceof EntityToggleGlideEvent) {
+      EntityToggleGlideEvent event = (EntityToggleGlideEvent) e;
+      if (event.isGliding())
+        event.setCancelled(true);
     }
   }
 
